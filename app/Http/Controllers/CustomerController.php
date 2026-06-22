@@ -30,55 +30,122 @@ class CustomerController extends Controller
 
     public function store_customer(Request $request)
     {
+        // Validate customer data
+        $request->validate([
+            'customer_name' => 'required|string|max:255|unique:customers,customer_name',
+            'customer_phone' => 'nullable|numeric',
+            'opening_balance' => 'nullable|numeric',
+        ]);
 
         if (Auth::id()) {
             $userId = Auth::id();
+
             $customer = Customer::create([
                 'admin_or_user_id' => $userId,
                 'customer_name' => $request->customer_name,
+                'customer_name_urdu' => $request->customer_name_urdu,
                 'customer_phone' => $request->customer_phone,
                 'city' => $request->city,
                 'area' => $request->area,
                 'customer_address' => $request->customer_address,
-                'opening_balance' => $request->opening_balance,
+                'opening_balance' => $request->opening_balance ?? 0,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
+
             CustomerLedger::create([
                 'admin_or_user_id' => $userId,
                 'customer_id' => $customer->id,
-                'previous_balance' => $request->opening_balance, // Pehli dafa opening balance = previous balance
-                'closing_balance' => $request->opening_balance, // Closing balance bhi initially same hoga
+                'opening_balance' => $request->opening_balance ?? 0,
+                'previous_balance' => $request->opening_balance ?? 0,
+                'closing_balance' => $request->opening_balance ?? 0,
                 'created_at' => Carbon::now(),
             ]);
 
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Customer created successfully',
+                    'customer' => $customer
+                ]);
+            }
+
             return redirect()->back()->with('success', 'Customer created successfully');
         } else {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
             return redirect()->back();
         }
     }
     public function update_customer(Request $request)
     {
-        if (Auth::id()) {
-            $usertype = Auth()->user()->usertype;
-            $userId = Auth::id();
-            // dd($request);
-            $update_id = $request->input('customer_id');
-
-            Customer::where('id', $update_id)->update([
-                'customer_name' => $request->customer_name,
-                'customer_phone' => $request->customer_phone,
-                'city' => $request->city,
-                'area' => $request->area,
-                'customer_address' => $request->customer_address,
-                'opening_balance' => $request->opening_balance,
-                'updated_at' => Carbon::now(),
-            ]);
-            return redirect()->back()->with('success', 'Customer Updated Successfully');
-        } else {
+        if (!Auth::id()) {
             return redirect()->back();
         }
+
+        $update_id = $request->input('customer_id');
+
+        // Get existing customer
+        $customer = Customer::find($update_id);
+        if (!$customer) {
+            return redirect()->back()->with('error', 'Customer not found');
+        }
+
+        // Get old opening balance
+        $old_opening_balance = $customer->opening_balance;
+
+        // Get recap adjustment type and amount
+        $recape_type = $request->input('recape_type');
+        $recape_amount = $request->input('recape_opening_balance') ?? 0;
+
+        // Adjust the balance based on the selected type
+        if ($recape_type === 'plus') {
+            $new_opening_balance = $old_opening_balance + $recape_amount;
+        } elseif ($recape_type === 'minus') {
+            $new_opening_balance = $old_opening_balance - $recape_amount;
+        } else {
+            $new_opening_balance = $old_opening_balance;
+        }
+
+        // Update customer info
+        $customer->update([
+            'customer_name' => $request->customer_name,
+            'customer_name_urdu' => $request->customer_name_urdu,
+            'customer_phone' => $request->customer_phone,
+            'city' => $request->city,
+            'area' => $request->area,
+            'opening_balance' => $new_opening_balance,
+            'updated_at' => Carbon::now(),
+        ]);
+
+        // Update ledger
+        $latestLedger = CustomerLedger::where('customer_id', $update_id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($latestLedger) {
+            $latestLedger->opening_balance = $new_opening_balance;
+            $latestLedger->closing_balance = ($recape_type === 'plus') ? $latestLedger->closing_balance + $recape_amount : $latestLedger->closing_balance - $recape_amount;
+            $latestLedger->updated_at = now();
+            $latestLedger->save();
+        } else {
+            CustomerLedger::create([
+                'admin_or_user_id' => Auth::id(),
+                'customer_id' => $update_id,
+                'previous_balance' => 0,
+                'opening_balance' => $new_opening_balance,
+                'closing_balance' => $new_opening_balance,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Customer Updated Successfully');
     }
+
+
+
 
     public function addCredit(Request $request)
     {
@@ -152,7 +219,10 @@ class CustomerController extends Controller
     {
         if (Auth::id()) {
             $userId = Auth::id();
-            $Recoveries = CustomerRecovery::where('admin_or_user_id', $userId)->with('customer')->get();
+            $Recoveries = CustomerRecovery::where('admin_or_user_id', $userId)
+                ->with('customer')
+                ->orderBy('id', 'desc') // Optional: show latest first
+                ->paginate(100); // 👈 Paginate with 100 per page
             return view('admin_panel.customers.customers_recoveries', compact('Recoveries'));
         } else {
             return redirect()->back();
@@ -160,18 +230,42 @@ class CustomerController extends Controller
     }
 
 
-    public function Customer_balance()
-    {
-        if (Auth::id()) {
-            $userId = Auth::id();
-            $CustomerLedgers = CustomerLedger::where('admin_or_user_id', $userId)->with('Customer')->get();
-            return view('admin_panel.customers.Customer_balance', compact('CustomerLedgers'));
-        } else {
-            return redirect()->back();
-        }
-    }
+ public function Customer_balance()
+{
+    if (Auth::id()) {
+        $userId = Auth::id();
 
-    public function fetchLedger($id)
+        $CustomerLedgers = CustomerLedger::where('admin_or_user_id', $userId)
+            ->with('Customer')
+            ->get();
+
+        // Calculate closing balance from DB
+        foreach ($CustomerLedgers as $ledger) {
+            $customerId = $ledger->Customer->id;
+
+            // Opening balance
+            $opening = (float) $ledger->opening_balance;
+
+            // Total Sales
+            $totalSales = DB::table('lot_sales')
+                ->where('customer_id', $customerId)
+                ->sum('total');
+
+            // Total Recoveries
+            $totalRecoveries = DB::table('customer_recoveries')
+                ->where('customer_ledger_id', $customerId)
+                ->sum('amount_paid');
+
+            // Final Closing Balance
+            $ledger->closing_balance = $opening + $totalSales - $totalRecoveries;
+        }
+
+        return view('admin_panel.customers.Customer_balance', compact('CustomerLedgers'));
+    } else {
+        return redirect()->back();
+    }
+}
+   public function fetchLedger($id)
     {
         $sales = DB::table('lot_sales')
             ->where('customer_id', $id)
@@ -201,7 +295,6 @@ class CustomerController extends Controller
 
         return response()->json($merged);
     }
-
     public function getLotDetails($id)
     {
         $lotSale = DB::table('lot_sales')
@@ -209,5 +302,34 @@ class CustomerController extends Controller
             ->first();
 
         return response()->json($lotSale);
+    }
+    
+    public function deleteRecovery(Request $request)
+    {
+        $request->validate([
+            'recovery_id' => 'required|integer',
+            'customer_id' => 'required|integer',
+            'amount' => 'required|numeric'
+        ]);
+
+        // Find recovery record
+        $recovery = DB::table('customer_recoveries')->where('id', $request->recovery_id)->first();
+
+        if (!$recovery) {
+            return response()->json(['message' => 'Recovery not found.'], 404);
+        }
+
+        // Permanently delete the recovery
+        DB::table('customer_recoveries')->where('id', $request->recovery_id)->delete();
+
+        // Update closing_balance in customer_ledgers by adding back the amount
+        DB::table('customer_ledgers')
+            ->where('customer_id', $request->customer_id)
+            ->update([
+                'closing_balance' => DB::raw("closing_balance + {$request->amount}"),
+                'updated_at' => now()
+            ]);
+
+        return response()->json(['message' => 'Recovery permanently deleted and balance updated.']);
     }
 }

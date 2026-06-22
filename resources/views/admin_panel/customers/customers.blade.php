@@ -19,13 +19,6 @@
                 <div class="d-flex mb-30 flex-wrap gap-3 justify-content-between align-items-center">
                     <h6 class="page-title">All Customer</h6>
                     <div class="d-flex flex-wrap justify-content-end gap-2 align-items-center breadcrumb-plugins">
-                        <form action="" method="GET" class="d-flex gap-2">
-                            <div class="input-group w-auto">
-                                <input type="search" name="search" class="form-control bg--white" placeholder="Username" value="">
-                                <button class="btn btn--primary" type="submit"><i class="la la-search"></i></button>
-                            </div>
-
-                        </form>
                         <button type="button" class="btn btn-sm btn-outline--primary cuModalBtn" data-modal_title="Add New Customer">
                             <i class="las la-plus"></i>Add New </button>
                     </div>
@@ -33,6 +26,14 @@
 
                 <div class="row">
                     <div class="col-lg-12">
+                        @if ($errors->any())
+                        <div class="alert alert-danger">
+                            @foreach ($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                            @endforeach
+                        </div>
+                        @endif
+
                         @if (session()->has('success'))
                         <div class="alert alert-success">
                             <strong>Success!</strong> {{ session('success') }}
@@ -46,6 +47,7 @@
                                             <tr>
                                                 <th>S.N.</th>
                                                 <th>Name</th>
+                                                <th>Urdu Name</th>
                                                 <th>Phone</th>
                                                 <th>City | Area</th>
                                                 <th>Opening Balance</th>
@@ -57,14 +59,27 @@
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $Customer->customer_name }}</td>
+                                                <td>{{ $Customer->customer_name_urdu }}</td>
                                                 <td>{{ $Customer->customer_phone }}</td>
                                                 <td>{{ $Customer->city }}<br>{{ $Customer->area }}</td>
                                                 <td>{{ $Customer->opening_balance }}</td>
                                                 <td>
                                                     <div class="button--group">
-                                                        <button type="button" class="btn btn-sm btn-outline--primary editcustomerbtn" data-toggle="modal" data-target="#exampleModal" data-customer-id="{{ $Customer->id }}" data-customer-name="{{ $Customer->customer_name }}"
-                                                            data-customer-city="{{ $Customer->city }}" data-customer-area="{{ $Customer->area }}" data-customer-phone="{{ $Customer->customer_phone }}" data-opening-balance="{{ $Customer->opening_balance }}">
-                                                            <i class="la la-pencil"></i>Edit </button>
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-sm btn-outline--primary editcustomerbtn"
+                                                            data-toggle="modal"
+                                                            data-target="#exampleModal"
+                                                            data-customer-id="{{ $Customer->id }}"
+                                                            data-customer-name="{{ $Customer->customer_name }}"
+                                                            data-customer-urdu="{{ $Customer->customer_name_urdu }}"
+                                                            data-customer-city="{{ $Customer->city }}"
+                                                            data-customer-area="{{ $Customer->area }}"
+                                                            data-customer-phone="{{ $Customer->customer_phone }}"
+                                                            data-opening-balance="{{ $Customer->opening_balance }}">
+                                                            <i class="la la-pencil"></i>Edit
+                                                        </button>
+
                                                     </div>
                                                 </td>
                                             </tr>
@@ -93,6 +108,10 @@
                                     <div class="form-group">
                                         <label>Name</label>
                                         <input type="text" class="form-control" name="customer_name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Urdu Name</label> <!-- Add this -->
+                                        <input type="text" class="form-control" name="customer_name_urdu">
                                     </div>
                                     <div class="form-group">
                                         <label>Mobile</label>
@@ -138,6 +157,11 @@
                                     </div>
 
                                     <div class="form-group">
+                                        <label>Urdu Name</label> <!-- Add this -->
+                                        <input type="text" class="form-control" id="edit_customer_name_urdu" name="customer_name_urdu">
+                                    </div>
+
+                                    <div class="form-group">
                                         <label>Mobile</label>
                                         <input type="text" class="form-control" id="edit_customer_phone" name="customer_phone">
                                     </div>
@@ -151,8 +175,21 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label>Opening Balance</label>
-                                        <input type="text" class="form-control" name="opening_balance" id="edit_opening_balance">
+                                        <label>Opening Balance (Read Only)</label>
+                                        <input type="text" class="form-control" name="opening_balance" id="edit_opening_balance" readonly>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Recape Type</label>
+                                        <select class="form-control" name="recape_type" id="recape_type">
+                                            <option value="plus">Plus</option>
+                                            <option value="minus">Minus</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Recape Opening Balance</label>
+                                        <input type="number" class="form-control" name="recape_opening_balance" id="recape_opening_balance" placeholder="Enter amount to adjust">
                                     </div>
 
                                 </div>
@@ -170,26 +207,24 @@
 
     <script>
         $(document).ready(function() {
-            // Edit category button click event
-            $('.editcustomerbtn').click(function() {
-                // Extract category ID and name from data attributes
+            $(document).on('click', '.editcustomerbtn', function() {
                 var customerId = $(this).data('customer-id');
                 var customername = $(this).data('customer-name');
                 var customerphone = $(this).data('customer-phone');
-                var customeraddress = $(this).data('customer-address');
                 var customercity = $(this).data('customer-city');
                 var customerarea = $(this).data('customer-area');
                 var customeropeningbalance = $(this).data('opening-balance');
+                var customerurdu = $(this).data('customer-urdu');
 
                 $('#customer_id').val(customerId);
                 $('#edit_customer_name').val(customername);
                 $('#customer_city').val(customercity);
                 $('#customer_area').val(customerarea);
                 $('#edit_customer_phone').val(customerphone);
-                $('#edit_customer_address').val(customeraddress);
                 $('#edit_opening_balance').val(customeropeningbalance);
-
+                $('#edit_customer_name_urdu').val(customerurdu);
+                $('#recape_opening_balance').val('');
+                $('#recape_type').val('plus'); // Default to plus
             });
         });
     </script>
-    

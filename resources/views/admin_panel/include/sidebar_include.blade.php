@@ -58,7 +58,7 @@
 
                 <li class="sidebar-menu-item sidebar-dropdown">
                     <a  href="javascript:void(0)">
-                        <i class="menu-icon las la-users"></i>
+                        <i class="menu-icon fas fa-user-friends"></i>
                         <span class="menu-title">Customer</span>
                     </a>
                     <div class="sidebar-submenu ">
@@ -105,7 +105,7 @@
                 
                 <li class="sidebar-menu-item sidebar-dropdown">
                     <a  href="javascript:void(0)">
-                        <i class="menu-icon las la-users"></i>
+                        <i class="menu-icon fas fa-user-check"></i>
                         <span class="menu-title">Vendor</span>
                     </a>
                     <div class="sidebar-submenu ">
@@ -114,6 +114,13 @@
                                 <a class="nav-link" href="{{ route('supplier') }}">
                                     <i class="menu-icon las la-dot-circle"></i>
                                     <span class="menu-title">Vendor</span>
+                                </a>
+                            </li>
+
+                            <li class="sidebar-menu-item ">
+                                <a class="nav-link" href="{{ route('Supplier-balance') }}">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title">Vendor Balance</span>
                                 </a>
                             </li>
 
@@ -160,7 +167,7 @@
 
                 <li class="sidebar-menu-item sidebar-dropdown">
                     <a  href="javascript:void(0)">
-                        <i class="menu-icon fas fa-truck"></i>
+                        <i class="menu-icon fas fa-shopping-basket"></i>
                         <span class="menu-title"> Sale</span>
                     </a>
                     <div class="sidebar-submenu ">
@@ -185,16 +192,82 @@
 
                 <li class="sidebar-menu-item">
                     <a href="{{ route('cash-sale') }}" class="nav-link">
-                        <i class="menu-icon fas fa-money-bill"></i>
+                        <i class="menu-icon fas fa-receipt"></i>
                         <span class="menu-title">Cash Sale</span>
                     </a><i class=""></i>
                 </li>
                 <li class="sidebar-menu-item">
                     <a href="{{ route('daily-sale') }}" class="nav-link">
-                        <i class="menu-icon fas fa-money-bill"></i>
+                        <i class="menu-icon fas fa-calendar-alt"></i>
                         <span class="menu-title">Daily Sale</span>
                     </a><i class=""></i>
                 </li>
+                <li class="sidebar-menu-item">
+                    <a href="{{ route('daily-sale-truck-wise') }}" class="nav-link">
+                        <i class="menu-icon fas fa-calendar-alt"></i>
+                        <span class="menu-title">Daily Sale Truck </span>
+                    </a><i class=""></i>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="{{ route('daily-recovery') }}" class="nav-link">
+                        <i class="menu-icon fas fa-calendar-alt"></i>
+                        <span class="menu-title">Daily Recoveries</span>
+                    </a><i class=""></i>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="{{ route('customer-payments') }}" class="nav-link">
+                        <i class="menu-icon fas fa-calendar-alt"></i>
+                        <span class="menu-title">Customer Payments</span>
+                    </a><i class=""></i>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="{{ route('Vendor-payments') }}" class="nav-link">
+                        <i class="menu-icon fas fa-calendar-alt"></i>
+                        <span class="menu-title">Vendors Payments</span>
+                    </a><i class=""></i>
+                </li>
+
+                <li class="sidebar-menu-item sidebar-dropdown">
+                    <a  href="javascript:void(0)">
+                        <i class="menu-icon fas fa-shopping-basket"></i>
+                        <span class="menu-title"> Reports</span>
+                    </a>
+                    <div class="sidebar-submenu ">
+                        <ul>
+                            <li class="sidebar-menu-item ">
+                                <a class="nav-link" href="{{ route('customer-ledger-report') }}">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title"> Customer Ledger Report </span>
+                                </a>
+                            </li>
+
+                            <li class="sidebar-menu-item ">
+                                <a class="nav-link" href="{{ route('Vendor-ledger-report') }}">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title"> Vendor Ledger Report</span>
+                                </a>
+                            </li>
+
+                            <li class="sidebar-menu-item ">
+    <a href="{{ route('customer.receivable.report') }}">
+        <i class="menu-icon las la-dot-circle"></i>
+        <span class="menu-title"> Customer Monthly Receivable Report </span>
+    </a>
+</li>
+
+<li class="sidebar-menu-item ">
+    <a href="{{ route('customers.current.balance.report') }}">
+        <i class="menu-icon las la-dot-circle"></i>
+        <span class="menu-title"> Customer Current Receivable Report </span>
+    </a>
+</li>
+
+
+
+                        </ul>
+                    </div>
+                </li>
+
                <!-- <li class="sidebar-menu-item sidebar-dropdown">
                     <a class="" href="javascript:void(0)">
                         <i class="menu-icon las la-users"></i>
@@ -380,6 +453,12 @@
                         </ul>
                     </div>
                 </li>  -->
+                <li class="sidebar-menu-item">
+                    <a href="{{ route('backup.index') }}" class="nav-link">
+                        <i class="menu-icon fas fa-database text--success"></i>
+                        <span class="menu-title">System Backup</span>
+                    </a>
+                </li>
             </ul>
             @endif
 

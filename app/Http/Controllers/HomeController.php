@@ -33,34 +33,126 @@ class HomeController extends Controller
 
                 return view('user_panel.user_dashboard', compact('categories', 'products', 'Customers','Warehouses'));
             } else if ($usertype == 'admin') {
-                $userId = Auth::id();
-                $totalPurchasesPrice = \App\Models\Purchase::sum('total_price');
-                $totalPurchaseReturnsPrice = \App\Models\PurchaseReturn::sum('total_price');
-                // Fetch all products for the logged-in admin
-                // $all_product = Product::where('admin_or_user_id', '=', $userId)->get();
-                $all_product = Product::get();
+                $today = now()->format('Y-m-d');
 
-                // Calculate total stock value for all products
-                $totalStockValue = $all_product->sum(function ($product) {
-                    return $product->stock * $product->wholesale_price;
-                });
+                // 1. Core KPIs (Summary parity with Report)
+                $startDate = now()->startOfMonth()->format('Y-m-d');
+                $previousMonthEnd = now()->startOfMonth()->subDay()->format('Y-m-d');
+                $today = now()->format('Y-m-d');
 
+                $allCustomers = DB::table('customers as c')->get();
+                
+                $totalCurrentBalance = 0;
+                $totalPreviousMonthBalance = 0;
+                $allClientData = []; // To store calculated balances for charts/watchlist
 
-                // Calculate total stock value for each product
-                foreach ($all_product as $product) {
-                    $product->total_stock_value = $product->stock * $product->wholesale_price;
+                foreach ($allCustomers as $c) {
+                    $opening = (float)$c->opening_balance;
+                    
+                    // Sales and Recoveries up to Previous Month End
+                    $prevSales = DB::table('lot_sales')->where('customer_id', $c->id)->where('sale_date', '<=', $previousMonthEnd)->sum('total');
+                    $prevRecov = DB::table('customer_recoveries')->where('customer_ledger_id', $c->id)->where('date', '<=', $previousMonthEnd)->sum('amount_paid');
+                    $balPrev = $opening + $prevSales - $prevRecov;
+
+                    // Real-time Current Sales and Recoveries
+                    $currSales = DB::table('lot_sales')->where('customer_id', $c->id)->sum('total');
+                    $currRecov = DB::table('customer_recoveries')->where('customer_ledger_id', $c->id)->sum('amount_paid');
+                    $balCurr = $opening + $currSales - $currRecov;
+
+                    $totalCurrentBalance += $balCurr;
+                    $totalPreviousMonthBalance += $balPrev;
+
+                    $allClientData[] = [
+                        'name' => $c->customer_name,
+                        'bal_prev' => $balPrev,
+                        'bal_curr' => $balCurr,
+                        'change' => $balCurr - $balPrev
+                    ];
                 }
 
+                // 2. Data for Charts
+                // Top 10 Debtors
+                $top10Debtors = collect($allClientData)->sortByDesc('bal_curr')->take(10)->values();
 
-                $categories = DB::table('categories')->count();
-                $products = DB::table('products')->count();
-                $suppliers = DB::table('suppliers')->count();
-                $customers = DB::table('customers')->count();
-                $totalsales = DB::table('sales')->sum('Payable_amount');
+                // Performance Stats
+                $increased = 0; $decreased = 0; $stable = 0;
+                foreach ($allClientData as $item) {
+                    if ($item['change'] > 1) $increased++;
+                    elseif ($item['change'] < -1) $decreased++;
+                    else $stable++;
+                }
+                $performanceStats = ['increased' => $increased, 'decreased' => $decreased, 'stable' => $stable];
 
-                // $lowStockProducts = Product::whereRaw('CAST(stock AS UNSIGNED) <= CAST(alert_quantity AS UNSIGNED)')->get();
-                // dd($lowStockProducts);
-                return view('admin_panel.admin_dashboard', compact('totalPurchasesPrice', 'totalPurchaseReturnsPrice', 'all_product', 'totalStockValue', 'categories', 'products', 'suppliers', 'customers','totalsales'));
+                // Watchlist (Customers with increasing debt)
+                $watchlistCustomers = collect($allClientData)->filter(fn($x) => $x['change'] > 1)->sortByDesc('change')->values();
+
+                // 3. Other Existing KPIs
+                $todaysSaleAmount = DB::table('lot_sales')->whereDate('created_at', $today)->sum('total');
+                $todaysSaleUnit = DB::table('lot_sales')->whereDate('created_at', $today)->sum('quantity');
+                $todaysRecovery = DB::table('customer_recoveries')->whereDate('date', $today)->sum('amount_paid');
+                $totalAvailableUnits = DB::table('lot_entries')->sum('lot_quantity');
+                $totalVendorBalance = DB::table('supplier_ledgers')->sum('closing_balance');
+                $totalCustomers = $allCustomers->count();
+                $totalVendors = DB::table('suppliers')->count();
+
+                $monthLabels = [];
+                $monthlyCashSales = [];
+                $monthlyCreditSales = [];
+                $monthlyRecoveries = [];
+                $monthlyReceivables = [];
+                
+                $totalPeriodCashSales = 0;
+                $totalPeriodCreditSales = 0;
+
+                $totalOpeningBalance = 0;
+                foreach($allCustomers as $c) {
+                    $totalOpeningBalance += (float)$c->opening_balance;
+                }
+
+                for ($i = 5; $i >= 0; $i--) {
+                    $monthToken = now()->subMonths($i);
+                    $monthTokenDate = $monthToken->endOfMonth()->format('Y-m-d');
+                    $monthKey = $monthToken->format('Y-m');
+                    $monthLabels[] = $monthToken->format('M');
+
+                    $cashAmt = DB::table('lot_sales')->where('customer_type', 'cash')->where('sale_date', 'like', $monthKey . '%')->sum('total');
+                    $monthlyCashSales[] = (float)$cashAmt;
+                    $totalPeriodCashSales += (float)$cashAmt;
+
+                    $creditAmt = DB::table('lot_sales')->where('customer_type', 'credit')->where('sale_date', 'like', $monthKey . '%')->sum('total');
+                    $monthlyCreditSales[] = (float)$creditAmt;
+                    $totalPeriodCreditSales += (float)$creditAmt;
+
+                    $rAmt = DB::table('customer_recoveries')->where('date', 'like', $monthKey . '%')->sum('amount_paid');
+                    $monthlyRecoveries[] = (float)$rAmt;
+
+                    // FIX: Cumulative Receivables = Opening + Cumulative CREDIT Sales - Cumulative Recoveries
+                    $cumCreditSales = DB::table('lot_sales')->where('customer_type', 'credit')->where('sale_date', '<=', $monthTokenDate)->sum('total');
+                    $cumRecoveries = DB::table('customer_recoveries')->where('date', '<=', $monthTokenDate)->sum('amount_paid');
+                    $monthlyReceivables[] = (float)($totalOpeningBalance + $cumCreditSales - $cumRecoveries);
+                }
+
+                return view('admin_panel.admin_dashboard', compact(
+                    'totalCurrentBalance',
+                    'totalPreviousMonthBalance',
+                    'todaysSaleAmount',
+                    'todaysSaleUnit',
+                    'todaysRecovery',
+                    'totalAvailableUnits',
+                    'totalVendorBalance',
+                    'totalCustomers',
+                    'totalVendors',
+                    'monthLabels',
+                    'monthlyCashSales',
+                    'monthlyCreditSales',
+                    'monthlyRecoveries',
+                    'monthlyReceivables',
+                    'top10Debtors',
+                    'performanceStats',
+                    'watchlistCustomers',
+                    'totalPeriodCashSales',
+                    'totalPeriodCreditSales'
+                ));
             }
         } else {
             return Redirect()->route('login');

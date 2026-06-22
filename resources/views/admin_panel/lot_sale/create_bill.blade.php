@@ -2,363 +2,677 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <body>
-    <div class="page-wrapper default-version">
-        @include('admin_panel.include.sidebar_include')
-        @include('admin_panel.include.navbar_include')
-        <div class="body-wrapper">
-            <div class="bodywrapper__inner">
-                <div class="d-flex mb-4 flex-wrap gap-3 justify-content-between align-items-center">
-                    <h4 class="fw-bold text-primary">Create Bill For Vendor</h4>
-                </div>
-                <div class="card shadow-lg p-4">
-                    <div class="card-body">
-                        <form method="POST" id="billForm" onsubmit="return validateBill()">
-                            @csrf
-                            <h4 class="fw-bold text-primary mt-4">Create Bill For Vendor (Truck: {{ $truck->truck_number }})</h4>
-                            <input type="hidden" name="truck_id" value="{{ $truck->id }}">
-                            <input type="hidden" name="truck_number" value="{{ $truck->truck_number }}">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Category</th>
-                                            <th>Variety</th>
-                                            <th>Unit</th>
-                                            <th>Unit In</th>
-                                            <th>Total Units</th>
-                                            <th>Available Units</th>
-                                            <th>Sale Average</th>
-                                            <th>Total Sale</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($lots as $lot)
-                                        <tr>
-                                            <td>{{ $lot->category }}</td>
-                                            <td>{{ $lot->variety }}</td>
-                                            <td>{{ $lot->unit }}</td>
-                                            <td>{{ $lot->unit_in }}</td>
-                                            <td>{{ $lot->total_units }}</td>
-                                            <td>{{ $lot->lot_quantity }}</td>
-                                            <td>{{ number_format($lot->average_sale, 2) }}</td>
-                                            <td>{{ number_format($lot->total_sale, 2) }}</td>
-                                            <td>
-                                                <button type="button" class="btn btn-primary btn-sm"
-                                                    onclick="addBillRow({{ $lot->id }}, '{{ $lot->category }}', '{{ $lot->variety }}', '{{ $lot->unit }}', {{ $lot->total_units }}, '{{ $lot->unit_in }}')">
-                                                    Add to Bill
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            <hr>
-                            <h4 class="fw-bold text-primary mt-5">Bill Details</h4>
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="billTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Bill Type</th>
-                                            <th>Total Units</th>
-                                            <th>Sale Units</th>
-                                            <th>Rate</th>
-                                            <th>Amount</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
+<div class="page-wrapper default-version">
+@include('admin_panel.include.sidebar_include')
+@include('admin_panel.include.navbar_include')
+<style>
+.table-readonly {
+    background: #f8f9fa;
+}
+.table-readonly th {
+    background: #e9ecef;
+    font-weight: 600;
+}
+.table-readonly td {
+    color: #495057;
 
-                            <div class="d-flex justify-content-between mt-4">
-                                <h5 class="fw-bold">Sub Total: <span id="subtotal">0</span></h5>
-                            </div>
-                            <hr>
-                            <h4 class="fw-bold text-primary mt-5">Mazdori Details</h4>
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="mazdoriTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Unit In</th>
-                                            <th>Total Units</th>
-                                            <th>Price Per Lot</th>
-                                            <th>Total</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
+}
+</style>
+    <style>
+.table-input th {
+    background: #f1f3f5;
+    font-weight: 600;
+}
+.table-input input,
+.table-input select {
+    background: #ffffff;
+    border-radius: 6px;
+}
+.table-input input:focus,
+.table-input select:focus {
+    border-color: #4dabf7;
+    box-shadow: 0 0 0 0.15rem rgba(77,171,247,.25);
+}
+</style>
+<style>
+.table-mazdori {
+    background: #fff8e1;
+}
+.table-mazdori th {
+    background: #ffecb3;
+    font-weight: 600;
+}
+</style>
+<style>
+.table-expense {
+    background: #fff5f5;
+}
+.table-expense th {
+    background: #ffe3e3;
+    font-weight: 600;
+}
+</style>
 
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <h5 class="fw-bold mb-0">
-                                    Total Mazdori: <span id="totalMazdori">0</span>
-                                    <a onclick="copyMazdori()" class="btn btn-sm btn-danger" title="Copy">
-                                    <i class="bi bi-clipboard"></i>
-                                </a>
-                                </h5>
-                                
-                            </div>
+<div class="body-wrapper">
+<div class="bodywrapper__inner">
 
-                            <hr>
-                            <div class="card mt-5 p-4 shadow-sm">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="fw-bold mb-0">Expenses</h5>
-                                    <button type="button" class="btn btn-sm btn-success" onclick="addExpenseRow()">Add Expense</button>
-                                </div>
+<h4 class="fw-bold text-primary mb-4">Create Bill For Vendor</h4>
 
-                                <table class="table table-bordered" id="expenseTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Expense Category</th>
-                                            <th>Value (Amount or %)</th>
-                                            <th>Final Amount</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+<div class="card shadow-lg p-4">
+<div class="card-body">
 
-                                <h5 class="mt-3 fw-bold">Total Expenses: <span id="totalExpense">0</span></h5>
-                                <h4 class="mt-3 fw-bold text-success">Net Pay to Vendor: <span id="netPay">0</span></h4>
-                            </div>
+{{-- ❌ NO DEFAULT FORM SUBMIT --}}
+<form id="billForm" onsubmit="return false;">
+@csrf
 
-                            <button type="submit" class="btn btn-primary" id="submitBill">Save Bill</button>
+{{-- BILL DATE --}}
+<div class="mb-3">
+<label>Bill Date</label>
+<input type="date" class="form-control" name="bill_date" id="bill_date" required>
+</div>
 
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<h5 class="fw-bold text-primary mt-4 d-flex gap-3 align-items-center">
+    <span>
+        🚚 Truck:
+        <span class="text-dark">{{ $truck->truck_number }}</span>
+    </span>
 
-    @include('admin_panel.include.footer_include')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <span class="badge bg-light text-dark border">
+         Vendor:
+        <strong>{{ $truck->vendor_id }}</strong>
+    </span>
+</h5>
 
-    <script>
-        function addBillRow(id, category, variety, unit, total_units, unit_in) {
-            const billTable = document.querySelector('#billTable tbody');
+<input type="hidden" name="truck_id" value="{{ $truck->id }}">
+<input type="hidden" name="truck_number" value="{{ $truck->truck_number }}">
+<input type="hidden" name="vendor_id" value="{{ $vendor_id }}">
 
-            const lastRow = billTable.querySelector("tr:last-child");
-            if (lastRow) {
-                const lastQty = lastRow.querySelector(".sale-units")?.value;
-                const lastRate = lastRow.querySelector(".rate")?.value;
-                if (!lastQty || !lastRate) {
-                    Swal.fire('Wait!', 'Please complete the previous row first.', 'warning');
-                    return;
-                }
-            }
+{{-- LOT LIST --}}
+<div class="table-responsive mt-3">
+<table class="table table-striped table-readonly">
+<thead>
+<tr>
+<th>Category</th>
+<th>Variety</th>
+<th>Unit</th>
+<th>Unit In</th>
+<th>Lot Units</th>
+<th>Total Weight</th>
+<th>Avg Sale</th>
+<th>Total Sale</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+@foreach($lots as $lot)
+<tr>
+<td>{{ $lot->category }}</td>
+<td>{{ $lot->variety }}</td>
+<td>{{ $lot->unit }}</td>
+<td>{{ $lot->unit_in }}</td>
+<td>{{ $lot->total_units }}</td>
+<td>{{ $lot->total_weight }}</td>
+<td>{{ number_format($lot->average_sale,2) }}</td>
+<td>{{ number_format($lot->total_sale,2) }}</td>
+<td>
+<button type="button" class="btn btn-sm btn-primary"
+onclick="addBillRow({{ $lot->id }}, '{{ $lot->category }}', '{{ $lot->variety }}', '{{ $lot->unit }}', {{ $lot->total_units }}, '{{ $lot->unit_in }}', {{ $lot->total_weight }})">
+Add
+</button>
+</td>
+</tr>
+@endforeach
+</tbody>
+<tfoot class="table-light fw-bold">
+<tr>
+    <td colspan="4" class="text-end">TOTAL</td>
+    <td>{{ $lots->sum('total_units') }}</td>
+    <td>{{ $lots->sum('total_weight') }}</td>
+    <td>-</td>
+    <td>{{ number_format($lots->sum('total_sale'), 2) }}</td>
+    <td></td>
+</tr>
+</tfoot>
+</table>
+</div>
 
-            const billRow = document.createElement('tr');
-            billRow.innerHTML = `
-            <td>
-                ${category} - ${variety} (${unit})<br>
-                <small class="text-muted">Unit In: ${unit_in}</small>
-                <input type="hidden" name="lots[]" value="${id}">
-                <input type="hidden" name="unit_in[${id}]" value="${unit_in}">
-            </td>
-            <td>${total_units}</td>
-            <td><input type="number" name="sale_units[${id}]" class="form-control sale-units" data-id="${id}" min="1" max="${total_units}" required></td>
-            <td><input type="number" name="rate[${id}]" class="form-control rate" data-id="${id}" min="1" required></td>
-            <td><input type="number" name="amount[${id}]" class="form-control amount" readonly></td>
-            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBothRows(this, ${id})">Remove</button></td>
-        `;
-            billTable.appendChild(billRow);
+{{-- BILL DETAILS --}}
+<h5 class="fw-bold text-primary mt-4">Bill Details</h5>
 
-            billRow.querySelector('.sale-units').addEventListener('input', updateRowAmount);
-            billRow.querySelector('.rate').addEventListener('input', updateRowAmount);
+<div class="table-responsive">
+<table class="table table-bordered table-input" id="billTable">
+<thead>
+<tr>
+<th>Item</th>
+<th>Lot Units</th>
+<th>Weight</th>
+<th>Sale Type</th>
+<th>Sale Units</th>
+<th>Rate</th>
+<th>Amount</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody></tbody>
+<tfoot class="table-secondary fw-bold">
+<tr>
+    <td class="text-end">TOTAL</td>
+    <td id="footerTotalUnits">0</td>
+    <td>-</td>
+    <td>-</td>
+    <td id="footerSaleUnits">0</td>
+    <td>-</td>
+    <td id="footerAmount">0</td>
+    <td></td>
+</tr>
+</tfoot>
+</table>
+</div>
 
-            addMazdoriRow(id, total_units, unit_in);
+<div class="alert alert-secondary py-2">
+
+    <strong>Sub Total:</strong>
+    <span class="float-end" id="subtotal">0</span>
+</div>
+
+<hr>
+
+{{-- MAZDORI --}}
+<h5 class="fw-bold text-primary">Mazdori</h5>
+
+<table class="table table-bordered table-mazdori" id="mazdoriTable">
+<thead>
+<tr>
+<th>Unit In</th>
+<th>Units</th>
+<th>Rate</th>
+<th>Total</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<div class="alert alert-warning py-2">
+    <strong>Total Mazdori:</strong>
+    <span class="float-end" id="totalMazdori">0</span>
+</div>
+
+<hr>
+
+{{-- EXPENSES --}}
+<h5 class="fw-bold text-primary">Expenses</h5>
+
+<button type="button" class="btn btn-sm btn-success mb-2" onclick="addExpenseRow(); return false;">
+Add Expense
+</button>
+
+<table class="table table-bordered table-expense" id="expenseTable">
+<thead>
+<tr>
+<th>Type</th>
+<th>Value</th>
+<th>Final</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<h6>Total Expenses: <span id="totalExpense">0</span></h6>
+<div class="d-flex gap-2 mt-2">
+<select id="adjustment_type"
+        class="form-control"
+        style="width:60px;">
+<option value="+">+</option>
+<option value="-">-</option>
+</select>
+<input type="number"
+       id="adjustment"
+       class="form-control text-end"
+       placeholder="Adjustment"
+       style="max-width:140px;">
+</div>
+<div class="alert alert-success py-3 fs-5">
+    <strong>Net Pay to Vendor:</strong>
+    <span class="float-end" id="netPay">0</span>
+</div>
+
+
+
+{{-- SAVE --}}
+<button type="button" class="btn btn-primary mt-4" id="submitBill">
+    <i class="fas fa-check-circle me-1"></i> Save Bill
+</button>
+
+</form>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+@include('admin_panel.include.footer_include')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+let lotTracker = {};
+let mazdoriTracker = {};
+
+function addBillRow(id, category, variety, unit, total_units, unit_in, total_weight) {
+
+    if (!lotTracker[id]) {
+        lotTracker[id] = {
+            total: total_units,
+            used: 0
+        };
+    }
+
+    const tbody = document.querySelector('#billTable tbody');
+    const tr = document.createElement('tr');
+
+    tr.dataset.lot = id;
+    tr.dataset.total = total_units;
+
+    tr.innerHTML = `
+        <td>
+            ${category} - ${variety} (${unit})
+            <input type="hidden" class="lot-id" value="${id}">
+        </td>
+        <td>${total_units}</td>
+        <td>
+            <input type="number" class="form-control weight" value="${total_weight}" min="0">
+        </td>
+        <td>
+            <select class="form-control calc-type">
+                <option value="unit">Unit</option>
+                <option value="kg">KG</option>
+            </select>
+        </td>
+        <td>
+            <input type="number" class="form-control sale-units" min="1">
+        </td>
+        <td>
+            <input type="number" class="form-control rate" min="1">
+        </td>
+        <td>
+            <input type="number" class="form-control amount" readonly>
+        </td>
+        <td>
+            <button type="button" class="btn btn-sm btn-danger"
+                onclick="removeRow(this)">
+                Remove
+            </button>
+        </td>
+    `;
+
+    tbody.appendChild(tr);
+
+    tr.querySelectorAll('.sale-units, .rate, .weight, .calc-type')
+        .forEach(el => el.addEventListener('input', () => calculateRow(tr)));
+        
+        addMazdoriRow(id, total_units, unit_in);
+calculateMazdoriTotal();
+updateBillFooter();
+}
+
+
+
+function calculateRow(row) {
+
+    const lotId = row.querySelector('.lot-id').value;
+    const totalUnits = lotTracker[lotId].total;
+    const saleUnits = parseFloat(row.querySelector('.sale-units').value) || 0;
+    const rate = parseFloat(row.querySelector('.rate').value) || 0;
+    const weight = parseFloat(row.querySelector('.weight').value) || 0;
+    const type = row.querySelector('.calc-type').value;
+
+    // 🔥 Recalculate used units
+    let used = 0;
+    document.querySelectorAll('#billTable tbody tr').forEach(r => {
+        if (r.querySelector('.lot-id')?.value === lotId) {
+            used += parseFloat(r.querySelector('.sale-units')?.value) || 0;
         }
+    });
 
-        function copyMazdori() {
+    if (used > totalUnits) {
+        Swal.fire(
+            'Units Exceeded',
+            `Lot total units = ${totalUnits}, you entered ${used}`,
+            'error'
+        );
+        row.querySelector('.sale-units').value = '';
+        return;
+    }
+
+    let amount = (type === 'kg')
+        ? weight * rate
+        : saleUnits * rate;
+
+    row.querySelector('.amount').value = Math.round(amount);
+    calculateTotal();
+    updateBillFooter();
+}
+
+function removeRow(btn) {
+    btn.closest('tr').remove();
+    calculateTotal();
+    updateBillFooter();
+
+}
+function addMazdoriRow(lotId, totalUnits, unitIn) {
+
+    if (mazdoriTracker[lotId]) return;
+
+    mazdoriTracker[lotId] = true;
+
+    const tbody = document.querySelector('#mazdoriTable tbody');
+    const tr = document.createElement('tr');
+    tr.dataset.lot = lotId;
+
+    tr.innerHTML = `
+        <td>${unitIn}</td>
+        <td>${totalUnits}</td>
+        <td>
+            <input type="number"
+                   class="form-control mazdori-rate"
+                   data-lot="${lotId}"
+                   min="0">
+        </td>
+        <td>
+            <input type="number"
+                   class="form-control mazdori-total"
+                   readonly>
+        </td>
+        <td>
+            <button type="button"
+                    class="btn btn-sm btn-danger"
+                    onclick="removeMazdoriRow(${lotId})">
+                Remove
+            </button>
+        </td>
+    `;
+
+    tbody.appendChild(tr);
+
+    tr.querySelector('.mazdori-rate')
+        .addEventListener('input', calculateMazdori);
+}
+function calculateMazdori() {
+
+    let total = 0;
+
+    document.querySelectorAll('#mazdoriTable tbody tr').forEach(row => {
+
+        const rate = parseFloat(
+            row.querySelector('.mazdori-rate')?.value
+        ) || 0;
+
+        const units = parseFloat(row.children[1].innerText) || 0;
+
+        const amount = rate * units;
+
+        row.querySelector('.mazdori-total').value = Math.round(amount);
+
+        total += amount;
+    });
+
+    document.getElementById('totalMazdori').innerText = Math.round(total);
+    calculateExpenses();
+}
+function removeMazdoriRow(lotId) {
+    document.querySelector(`#mazdoriTable tr[data-lot="${lotId}"]`)?.remove();
+    delete mazdoriTracker[lotId];
+    calculateMazdori();
+}
+   function copyMazdori() {
             const value = document.getElementById('totalMazdori').innerText;
             navigator.clipboard.writeText(value).then(() => {}).catch(err => {});
         }
+        function handleTypeChange(select) {
+    const row   = select.closest('tr');
+    const input = row.querySelector('.expense-input');
+    const final = row.querySelector('.expense-final');
 
+    if (select.value === "Mazdori") {
+        const totalMazdori = parseFloat(
+            document.getElementById('totalMazdori').innerText
+        ) || 0;
 
-        function updateRowAmount(e) {
-            const id = e.target.dataset.id;
-            const units = parseFloat(document.querySelector(`input[name="sale_units[${id}]"]`).value) || 0;
-            const rate = parseFloat(document.querySelector(`input[name="rate[${id}]"]`).value) || 0;
-            const amount = units * rate;
+        input.value = totalMazdori;
+        final.value = totalMazdori;
+    }
+    else {
+        input.value = '';
+        final.value = '';
+    }
 
-            document.querySelector(`input[name="amount[${id}]"]`).value = Math.round(amount);
-            calculateTotal();
+    calculateExpenses();
+}
+function addExpenseRow() {
+
+    const tbody = document.querySelector('#expenseTable tbody');
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+        <td>
+            <select class="form-control expense-type" onchange="handleTypeChange(this)">
+                <option value="">Select</option>
+                <option value="Mazdori">Mazdori</option>
+                <option value="Commission">Commission (%)</option>
+                <option value="Rent">Rent</option>
+                <option value="Market Tax">Market Tax</option>
+            </select>
+        </td>
+        <td>
+            <input type="number"
+                   class="form-control expense-input">
+        </td>
+        <td>
+            <input type="number"
+                   class="form-control expense-final"
+                   readonly>
+        </td>
+        <td>
+            <button type="button"
+                    class="btn btn-sm btn-danger"
+                    onclick="this.closest('tr').remove(); calculateExpenses();">
+                Remove
+            </button>
+        </td>
+    `;
+
+    tbody.appendChild(tr);
+
+    tr.querySelector('.expense-type').addEventListener('change', () => calculateExpenses());
+    tr.querySelector('.expense-input').addEventListener('input', () => calculateExpenses());
+}
+function calculateExpenses() {
+    const subtotal = parseFloat(document.getElementById('subtotal').textContent) || 0;
+
+    let totalExpense = 0;
+
+    document.querySelectorAll('#expenseTable tbody tr').forEach(row => {
+        const type = row.querySelector('.expense-type')?.value || '';
+        const value = parseFloat(row.querySelector('.expense-input')?.value) || 0;
+
+        let final = 0;
+
+        if (type === 'Commission') {
+            final = subtotal * (value / 100);
+        } else {
+            final = value;
         }
 
-        function calculateTotal() {
-            let total = 0;
-            document.querySelectorAll('.amount').forEach(input => {
-                const val = parseFloat(input.value);
-                if (!isNaN(val)) total += val;
-            });
-            document.getElementById('subtotal').textContent = Math.round(total);
-            calculateExpenses();
-        }
+        row.querySelector('.expense-final').value = Math.round(final);
+        totalExpense += final;
+    });
 
-        function addMazdoriRow(id, total_units, unit_in) {
-            const table = document.querySelector('#mazdoriTable tbody');
-            const row = document.createElement('tr');
-            row.setAttribute("id", `mazdori_row_${id}`);
+    document.getElementById('totalExpense').textContent = Math.round(totalExpense);
 
-            row.innerHTML = `
-            <td><input type="text" name="mazdori_unit_in[${id}]" class="form-control" value="${unit_in}" readonly></td>
-            <td><input type="number" name="mazdori_units[${id}]" class="form-control" value="${total_units}" readonly></td>
-            <td><input type="number" name="mazdori_price_per_lot[${id}]" class="form-control price-per-lot" data-id="${id}" required></td>
-            <td><input type="number" name="mazdori_total[${id}]" class="form-control mazdori-total" readonly></td>
-            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeBothRows(this, ${id})">Remove</button></td>
-        `;
-            table.appendChild(row);
+let adjustment = parseFloat(document.getElementById('adjustment').value);
+if (isNaN(adjustment)) adjustment = 0;
 
-            row.querySelector('.price-per-lot').addEventListener('input', calculateMazdoriTotal);
-        }
+if (document.getElementById('adjustment_type').value === '-') {
+    adjustment = -adjustment;
+}
 
-        function calculateMazdoriTotal() {
-            let totalMazdori = 0;
-            document.querySelectorAll('.price-per-lot').forEach(input => {
-                const id = input.dataset.id;
-                const price = parseFloat(input.value) || 0;
-                const units = parseFloat(document.querySelector(`input[name="mazdori_units[${id}]"]`).value) || 0;
-                const total = price * units;
-                document.querySelector(`input[name="mazdori_total[${id}]"]`).value = Math.round(total);
-            });
 
-            document.querySelectorAll('.mazdori-total').forEach(input => {
-                const val = parseFloat(input.value);
-                if (!isNaN(val)) totalMazdori += val;
-            });
 
-            document.getElementById('totalMazdori').textContent = Math.round(totalMazdori);
-        }
+    const netPay = subtotal - totalExpense + adjustment;
 
-        function removeBothRows(btn, id) {
-            btn.closest('tr').remove();
+    document.getElementById('netPay').textContent = Math.round(netPay);
+    document.getElementById('net_pay_to_vendor').value = Math.round(netPay);
+}
 
-            const mazdoriRow = document.getElementById(`mazdori_row_${id}`);
-            if (mazdoriRow) mazdoriRow.remove();
+function calculateTotal() {
+    let total = 0;
+    document.querySelectorAll('.amount').forEach(a => {
+        total += parseFloat(a.value) || 0;
+    });
 
-            calculateTotal();
-            calculateMazdoriTotal();
-        }
+    document.getElementById('subtotal').innerText = Math.round(total);
+    calculateMazdoriTotal();
+    calculateExpenses();
+}
 
-        function calculateExpenses() {
-            const subtotal = parseFloat(document.getElementById('subtotal').textContent) || 0;
-            let totalExpense = 0;
+const billViewUrl = "{{ route('bill-book', ':id') }}";
 
-            document.querySelectorAll('#expenseTable tbody tr').forEach(row => {
-                const type = row.querySelector('.expense-type').value;
-                const value = parseFloat(row.querySelector('.expense-input').value) || 0;
-                let final = 0;
+/* ================= BILL SAVE ================= */
+document.getElementById('submitBill').addEventListener('click', function () {
 
-                if (type === 'Commission') {
-                    final = subtotal * (value / 100);
-                } else {
-                    final = value;
-                }
+let lotCheck = {};
 
-                row.querySelector('.expense-final').value = Math.round(final);
-                totalExpense += final;
-            });
+document.querySelectorAll('#billTable tbody tr').forEach(row => {
+    const lotId = row.querySelector('.lot-id').value;
+    const units = parseFloat(row.querySelector('.sale-units').value) || 0;
 
-            document.getElementById('totalExpense').textContent = Math.round(totalExpense);
-            document.getElementById('netPay').textContent = Math.round(subtotal - totalExpense);
-        }
+    if (!lotCheck[lotId]) lotCheck[lotId] = 0;
+    lotCheck[lotId] += units;
+});
 
-        function validateBill() {
-            const hasBillRows = document.querySelector('#billTable tbody').children.length;
-            if (!hasBillRows) {
-                Swal.fire('Empty!', 'Please add at least one bill row.', 'warning');
-                return false;
-            }
-            return true;
-        }
+for (let lotId in lotCheck) {
 
-        function addExpenseRow() {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-            <td>
-                <select class="form-control expense-type" onchange="calculateExpenses()">
-                    <option value="">Select</option>
-                    <option value="Mazdori">Mazdori</option>
-                    <option value="Commission">Commission (%)</option>
-                    <option value="Rent">Rent</option>
-                    <option value="Market Tax">Market Tax</option>
-                </select>
-            </td>
-            <td><input type="number" class="form-control expense-input" oninput="calculateExpenses()"></td>
-            <td><input type="number" class="form-control expense-final" readonly></td>
-            <td><button type="button" class="btn btn-danger btn-sm" onclick="this.closest('tr').remove(); calculateExpenses();">Remove</button></td>
-        `;
-            document.querySelector('#expenseTable tbody').appendChild(row);
-        }
+    const totalAllowed = document.querySelector(
+        `#billTable tr[data-lot="${lotId}"]`
+    )?.dataset.total;
 
-        document.getElementById('billForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+    if (lotCheck[lotId] < totalAllowed) {
+        Swal.fire(
+            'Incomplete Lot',
+            `Lot ${lotId} sale units are less than total units`,
+            'error'
+        );
+        return; // ❌ STOP SAVE
+    }
+}
 
-            const form = e.target;
-            const truckId = form.querySelector('input[name="truck_id"]').value;
-            const trucknumber = form.querySelector('input[name="truck_number"]').value;
-            const subtotal = document.getElementById('subtotal').textContent;
-            const totalExpense = document.getElementById('totalExpense').textContent;
-            const netPay = document.getElementById('netPay').textContent;
+const dateInput = document.getElementById('bill_date').value;
+if (!dateInput) {
+Swal.fire('Required','Please select bill date','warning');
+return;
+}
 
-            // Collect bill details
-            const bills = [];
-            document.querySelectorAll('#billTable tbody tr').forEach(row => {
-                const lotId = row.querySelector('input[name^="lots"]').value;
-                bills.push({
-                    lot_id: lotId,
-                    sale_units: row.querySelector(`input[name="sale_units[${lotId}]"]`).value,
-                    rate: row.querySelector(`input[name="rate[${lotId}]"]`).value,
-                    amount: row.querySelector(`input[name="amount[${lotId}]"]`).value,
-                    unit_in: row.querySelector(`input[name="unit_in[${lotId}]"]`).value
-                });
-            });
 
-            // Collect expenses
-            const expenses = [];
-            document.querySelectorAll('#expenseTable tbody tr').forEach(row => {
-                expenses.push({
-                    category: row.querySelector('.expense-type').value,
-                    value: row.querySelector('.expense-input').value,
-                    final_amount: row.querySelector('.expense-final').value
-                });
-            });
+let bills = [];
+document.querySelectorAll('#billTable tbody tr').forEach(row => {
+bills.push({
+lot_id: row.dataset.lot,
+sale_units: row.querySelector('.sale-units').value,
+rate: row.querySelector('.rate').value,
+amount: row.querySelector('.amount').value,
+unit_in: row.dataset.unit,
+weight: row.querySelector('.weight').value
+});
+});
 
-            const payload = {
-                truck_id: truckId,
-                trucknumber: trucknumber,
-                subtotal: subtotal,
-                total_expense: totalExpense,
-                net_pay: netPay,
-                bill_details: bills,
-                expenses: expenses
-            };
+if (bills.length === 0) {
+Swal.fire('Empty','Add at least one bill row','warning');
+return;
+}
 
-            // 🔥 Check what’s being sent (can remove console later)
-            console.log(payload);
+let expenses = [];
+document.querySelectorAll('#expenseTable tbody tr').forEach(row => {
+expenses.push({
+category: row.querySelector('.expense-type').value,
+value: row.querySelector('.expense-input').value,
+final_amount: row.querySelector('.expense-final').value
+});
+});
 
-            fetch("{{ route('vendor.bill.store') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify(payload)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    Swal.fire('Success', 'Bill has been saved!', 'success');
-                })
-                .catch(error => {
-                    console.error(error);
-                    Swal.fire('Error', 'Something went wrong!', 'error');
-                });
-        });
-    </script>
+const payload = {
+bill_date: dateInput,
+truck_id: document.querySelector('[name=truck_id]').value,
+trucknumber: document.querySelector('[name=truck_number]').value,
+vendorId: document.querySelector('[name=vendor_id]').value,
+subtotal: document.getElementById('subtotal').innerText,
+total_expense: document.getElementById('totalExpense').innerText,
+net_pay: document.getElementById('netPay').innerText,
+adjustment: document.getElementById('adjustment').value,
+bill_details: bills,
+expenses: expenses
+};
+
+// Disable button and show loading state
+const btn = document.getElementById('submitBill');
+const originalHtml = btn.innerHTML;
+btn.disabled = true;
+btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...`;
+
+fetch("{{ route('vendor.bill.store') }}",{
+method:'POST',
+headers:{
+'Content-Type':'application/json',
+'X-CSRF-TOKEN':'{{ csrf_token() }}'
+},
+body:JSON.stringify(payload)
+})
+.then(res=>res.json())
+.then(data=>{
+if(data.success){
+Swal.fire('Saved',data.message,'success');
+setTimeout(()=>{
+window.location.href = billViewUrl.replace(':id', data.bill_id);
+},500);
+}else{
+// Re-enable on error
+btn.disabled = false;
+btn.innerHTML = originalHtml;
+Swal.fire('Error',data.message,'error');
+}
+})
+.catch(()=>{
+// Re-enable on error
+btn.disabled = false;
+btn.innerHTML = originalHtml;
+Swal.fire('Error','Server error','error');
+});
+});
+
+document.getElementById('adjustment')
+    .addEventListener('input', calculateExpenses);
+
+document.getElementById('adjustment_type')
+    .addEventListener('change', calculateExpenses);
+
+function updateBillFooter() {
+
+    let totalSaleUnits = 0;
+    let totalAmount = 0;
+
+    document.querySelectorAll('#billTable tbody tr').forEach(row => {
+
+        const saleUnits = parseFloat(row.querySelector('.sale-units')?.value) || 0;
+        const amount = parseFloat(row.querySelector('.amount')?.value) || 0;
+
+        totalSaleUnits += saleUnits;
+        totalAmount += amount;
+    });
+
+    document.getElementById('footerSaleUnits').innerText = Math.round(totalSaleUnits);
+    document.getElementById('footerAmount').innerText = Math.round(totalAmount);
+}
+</script>
+
 </body>

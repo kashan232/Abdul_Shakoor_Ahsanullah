@@ -33,7 +33,8 @@
                                         <td>
                                             @if($truck->total_units > 0)
                                             <a href="{{ route('show-Lots', $truck->id) }}" class="btn btn-primary btn-sm">Sale</a>
-                                            @else
+						<a href="{{ route('lot.sale.bulk', $truck->id) }}" class="btn btn-info btn-sm ms-1">Bulk Sale</a>
+					  @else
                                             <span class="btn btn-danger btn-sm">Units Sold</span>
                                             @endif
                                             <a href="{{ route('sale-record', $truck->id) }}" class="btn btn-success btn-sm">Sale Record</a>

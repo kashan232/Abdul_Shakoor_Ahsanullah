@@ -16,10 +16,16 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\CustomerReportController;
 use App\Http\Controllers\TruckEntryController;
 use App\Http\Controllers\UnitInController;
 use App\Http\Controllers\VendorController;
+
 use Illuminate\Support\Facades\Route;
+/*use Illuminate\Support\Facades\Artisan;*/
+
 
 /*
 |--------------------------------------------------------------------------
@@ -41,9 +47,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+ Route::get('/dashboard', function () {
+     return view('dashboard');
+ })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/home', [HomeController::class, 'home'])->middleware(['auth'])->name('home');
 Route::get('/admin-page', [HomeController::class, 'adminpage'])->middleware(['auth','admin'])->name('admin-page');
@@ -115,7 +121,9 @@ Route::post('/update-supplier', [SupplierController::class, 'update_supplier'])-
 Route::get('/supplier-ledger', [SupplierController::class, 'supplier_ledger'])->middleware(['auth', 'admin'])->name('supplier-ledger');
 Route::post('/supplier-payment-store', [SupplierController::class, 'supplier_payment_store'])->name('supplier-payment-store');
 Route::get('/supplier-payment', [SupplierController::class, 'supplier_payment'])->name('supplier-payment');
-
+Route::get('/Supplier-balance', [SupplierController::class, 'Supplier_balance'])->middleware(['auth', 'admin'])->name('Supplier-balance');
+Route::get('/Supplier-balance-ledger/{id}', [SupplierController::class, 'Supplier_balance_ledger'])->name('Supplier-balance-ledger');
+Route::post('/toggle-supplier-status', [SupplierController::class, 'toggleStatus'])->name('toggle-supplier-status');
 //Staff
 Route::get('/staff', [StaffController::class, 'staff'])->middleware(['auth','admin'])->name('staff');
 Route::post('/store-staff', [StaffController::class, 'store_staff'])->name('store-staff');
@@ -186,6 +194,7 @@ Route::get('/Truck-Entry', [TruckEntryController::class, 'Truck_Entry'])->name('
 Route::post('/Truck-Entry/Store', [TruckEntryController::class, 'store'])->name('Truck-Entry.Store');
 Route::get('/Truck-Entries', [TruckEntryController::class, 'Truck_Enters'])->name('Truck-Entries');
 Route::get('/Truck-Entry/{id}', [TruckEntryController::class, 'show'])->name('Truck-Entry.Show');
+Route::delete('truck-entry/{id}', [TruckEntryController::class, 'destroy'])->name('Truck-Entry.Destroy');
 
 Route::get('/truck-entry/edit/{id}', [TruckEntryController::class, 'edit'])->name('Truck-Entry.Edit');
 Route::put('/truck_entries/{id}', [TruckEntryController::class, 'update'])->name('truck_entries.update');
@@ -194,19 +203,30 @@ Route::put('/truck_entries/{id}', [TruckEntryController::class, 'update'])->name
 Route::get('/show-trucks', [LotSaleController::class, 'show_trucks'])->name('show-trucks');
 Route::get('/show-Lots/{id}', [LotSaleController::class, 'show_Lots'])->name('show-Lots');
 Route::post('/lot-sale', [LotSaleController::class, 'store_lot'])->name('lot.sale.store');
+Route::get('/lot-sale-bulk/{truck_id}', [LotSaleController::class, 'show_Lots_Bulk'])->name('lot.sale.bulk');
+Route::post('/lot-sale-bulk/{truck_id}', [LotSaleController::class, 'storeBulkSale'])->name('lot.sale.bulk.store');
 Route::get('/sale-record/{truck_id}', [LotSaleController::class, 'showSaleRecord'])->name('sale-record');
 Route::post('/update-lot-sale', [LotSaleController::class, 'updateLotSale'])->name('update.lot.sale');
+Route::post('/delete-lot-sale', [LotSaleController::class, 'deleteSale'])->name('delete.sale');
+
 
 Route::get('/cash-sale', [LotSaleController::class, 'cash_sale'])->middleware(['auth', 'admin'])->name('cash-sale');
 Route::get('/daily-sale', [LotSaleController::class, 'daily_sale'])->middleware(['auth', 'admin'])->name('daily-sale');
 Route::post('/daily-sale-report', [LotSaleController::class, 'getDailySales'])->name('daily.sales');
+Route::get('/daily-recovery', [LotSaleController::class, 'daily_recovery'])->middleware(['auth', 'admin'])->name('daily-recovery');
+Route::post('/daily-recovery-report', [LotSaleController::class, 'getrecovery'])->name('daily.recovery');
+Route::get('/daily-sale-truck-wise', [LotSaleController::class, 'daily_sale_truck_wise'])->middleware(['auth', 'admin'])->name('daily-sale-truck-wise');
+Route::post('/daily-sale-truck-report', [LotSaleController::class, 'daily_sale_truck_report'])->name('daily.truck.sale');
+
 
 Route::get('/trucks-sold', [LotSaleController::class, 'trucks_sold'])->name('trucks-sold');
-
+Route::get('/trucks-sold-data', [LotSaleController::class, 'trucks_sold_data'])->name('trucks-sold.data');
+Route::get('/delete-bill/{billId}', [LotSaleController::class, 'deleteBill'])->name('delete-bill');
 Route::get('/customer-sale', [LotSaleController::class, 'customer_sale'])->name('customer-sale');
 Route::get('/customer-lots', [LotSaleController::class, 'getCustomerLots'])->name('customer.lots');
 
-Route::get('/Create-Bill/{id}', [LotSaleController::class, 'Create_Bill'])->name('Create-Bill');
+
+Route::get('/create-bill/{truck_id}/{vendor_id}', [LotSaleController::class, 'Create_Bill'])->name('Create-Bill');
 Route::post('/vendor-bill/store', [LotSaleController::class, 'store_Bill'])->name('vendor.bill.store');
 Route::get('/vendor-bill/view/{id}', [LotSaleController::class, 'view'])->name('view-vendor-bill');
 Route::get('/bill-book/view/{id}', [LotSaleController::class, 'bill_book'])->name('bill-book');
@@ -215,8 +235,39 @@ Route::get('/bill-book/view/{id}', [LotSaleController::class, 'bill_book'])->nam
 Route::get('/Customer-balance', [CustomerController::class, 'Customer_balance'])->middleware(['auth', 'admin'])->name('Customer-balance');
 Route::get('/customer-ledger/{id}', [CustomerController::class, 'fetchLedger'])->name('customer.ledger');
 Route::get('/lot/sale/{id}', [CustomerController::class, 'getLotDetails'])->name('lot.sale.details');
+Route::post('/delete-recovery', [CustomerController::class, 'deleteRecovery'])->name('delete.recovery');
 
 
+Route::get('/customer-payments', [PaymentController::class, 'customer_payments'])->middleware(['auth', 'admin'])->name('customer-payments');
+Route::get('/get-customer-balance/{id}', [PaymentController::class, 'getCustomerBalance'])->name('get.customer.balance');
+Route::post('/customer-payment/store', [PaymentController::class, 'storeCustomerPayment'])->name('customer.payment.store');
+
+Route::get('/Vendor-payments', [PaymentController::class, 'Vendor_payments'])->middleware(['auth', 'admin'])->name('Vendor-payments');
+Route::post('/vendor-payment-store', [PaymentController::class, 'storeVendorPayment'])->name('vendor-payment-store');
+Route::get('/get-vendor-balance/{id}', [PaymentController::class, 'getVendorBalance'])->name('get-Vendor-balance');
+
+Route::get('/customer-ledger-report', [ReportController::class, 'customer_ledger_report'])->name('customer-ledger-report');
+Route::get('/fetch-Customer-ledger', [ReportController::class, 'fetchCustomerledger'])->name('fetch-Customer-ledger');
+
+Route::get('/Vendor-ledger-report', [ReportController::class, 'Vendor_ledger_report'])->name('Vendor-ledger-report');
+Route::get('/fetch-Vendor-ledger-report', [ReportController::class, 'fetch_Vendor_ledger_report'])->name('fetch-Vendor-ledger-report');
+
+
+
+Route::get('/multi-lots/{truck_id}', [LotSaleController::class, 'show_multi_Lots'])->name('multi.lots.show');
+Route::post('/multi-lots/store', [LotSaleController::class, 'store_multi_lot'])->name('multi.lots.store');
+
+
+/*Route::get('/clear-cache', function () {
+    Artisan::call('optimize:clear');
+    return "<h3 style='color:green;'>✅ All Laravel cache (config, route, view, compiled) cleared successfully!</h3>";
+});*/
+
+Route::get('/Market-credit-report', [ReportController::class, 'Marketcreditreport'])->name('Market-credit-report');
+Route::post('/get-customer-ledger-summary', [ReportController::class, 'getCustomerLedgerSummary'])->name('get.customer.ledger.summary');
+Route::get('/reports/receivable', [CustomerReportController::class, 'receivableReport']);
+Route::get('/customerReceivableReport', [CustomerReportController::class, 'customerReceivableReport'])->name('customer.receivable.report');
+Route::get('/customers-current-balance-report', [CustomerReportController::class, 'currentBalanceReport'])->name('customers.current.balance.report');
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -224,5 +275,9 @@ Route::middleware('auth')->group(function () {
 });
 
 
+
+Route::get('/system-backup', [App\Http\Controllers\BackupController::class, 'index'])->name('backup.index');
+Route::get('/download-sql', [App\Http\Controllers\BackupController::class, 'downloadSql'])->name('backup.download.sql');
+Route::post('/trigger-email-backup', [App\Http\Controllers\BackupController::class, 'triggerEmailBackup'])->name('backup.trigger.email');
 
 require __DIR__.'/auth.php';

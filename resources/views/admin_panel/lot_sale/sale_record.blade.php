@@ -72,6 +72,15 @@
                                                         <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ $sale->id }}">
                                                             Edit
                                                         </button>
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-danger delete-sale"
+                                                            data-lot-id="{{ $sale->lot_id }}"
+                                                            data-sale-id="{{ $sale->id }}"
+                                                            data-customer-id="{{ $sale->customer_id }}">
+                                                            Delete
+                                                        </button>
+
                                                     </td>
                                                 </tr>
 
@@ -83,21 +92,47 @@
                                                             <input type="hidden" name="sale_id" value="{{ $sale->id }}">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
-                                                                    <h5 class="modal-title" id="editModalLabel{{ $sale->id }}">Edit Sale - {{ $sale->customer_name }}</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    <h5 class="modal-title" id="editModalLabel{{ $sale->id }}">
+                                                                        Edit Sale - {{ $sale->customer_name }}
+                                                                    </h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                                 </div>
                                                                 <div class="modal-body">
+                                                                    <!-- Current sold units (read‑only) -->
                                                                     <div class="mb-3">
-                                                                        <label for="quantity" class="form-label">Sold Units</label>
-                                                                        <input type="number" name="quantity" class="form-control" value="{{ $sale->quantity }}" required>
+                                                                        <label class="form-label">Sold Units</label>
+                                                                        <input type="number" class="form-control"
+                                                                            value="{{ $sale->quantity }}" readonly>
                                                                     </div>
+                                                                    <!-- Conditional Weight Field -->
+                                                                    @if($sale->weight !== null)
+                                                                    <div class="mb-3">
+                                                                        <label for="weight" class="form-label">Weight (KG)</label>
+                                                                        <input type="number" step="0.01" name="weight" class="form-control" value="{{ $sale->weight }}">
+                                                                        <div class="form-text">Optional: Only applicable if weight-based sale.</div>
+                                                                    </div>
+                                                                    @endif
+                                                                    <!-- NEW: Add Units -->
+                                                                    <div class="mb-3">
+                                                                        <label for="add_units" class="form-label">Add Units</label>
+                                                                        <input type="number" name="add_units" id="add_units"
+                                                                            class="form-control" value="0" min="0" required>
+                                                                        <div class="form-text">
+                                                                            Enter how many more units to sell (or 0 to leave unchanged).
+                                                                        </div>
+                                                                    </div>
+
                                                                     <div class="mb-3">
                                                                         <label for="price" class="form-label">Price</label>
-                                                                        <input type="number" name="price" step="0.01" class="form-control" value="{{ $sale->price }}" required>
+                                                                        <input type="number" name="price" step="0.01"
+                                                                            class="form-control" value="{{ $sale->price }}" required>
                                                                     </div>
+
                                                                     <div class="mb-3">
                                                                         <label for="sale_date" class="form-label">Sale Date</label>
-                                                                        <input type="date" name="sale_date" class="form-control" value="{{ \Carbon\Carbon::parse($sale->sale_date)->format('Y-m-d') }}" required>
+                                                                        <input type="date" name="sale_date" class="form-control"
+                                                                            value="{{ \Carbon\Carbon::parse($sale->sale_date)->format('Y-m-d') }}"
+                                                                            required>
                                                                     </div>
                                                                 </div>
                                                                 <div class="modal-footer">
@@ -105,6 +140,7 @@
                                                                 </div>
                                                             </div>
                                                         </form>
+
                                                     </div>
                                                 </div>
                                                 @endforeach
@@ -126,3 +162,49 @@
 
     @include('admin_panel.include.footer_include')
 </body>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $('.delete-sale').on('click', function() {
+        const lotId = $(this).data('lot-id');
+        const saleId = $(this).data('sale-id');
+        const customerid = $(this).data('customer-id');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You want to delete this sale!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Send AJAX request here
+                $.ajax({
+                    url: '{{ route("delete.sale") }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        lot_id: lotId,
+                        sale_id: saleId,
+                        customerid: customerid
+                    },
+                    success: function(res) {
+                        Swal.fire(
+                            'Deleted!',
+                            res.message,
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function(xhr) {
+                        let error = xhr.responseJSON?.message || 'Something went wrong!';
+                        Swal.fire('Error', error, 'error');
+                    }
+                });
+            }
+        });
+    });
+</script>

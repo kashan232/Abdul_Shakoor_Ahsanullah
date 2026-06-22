@@ -12,6 +12,8 @@ use App\Models\UnitIn;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class TruckEntryController extends Controller
 {
@@ -84,10 +86,8 @@ class TruckEntryController extends Controller
     {
         if (Auth::id()) {
             $userId = Auth::id();
-
             // Truck entries fetch karna
             $truckEntries = TruckEntry::with('lots')->orderBy('id', 'desc')->get();
-
             return view('admin_panel.Truck_entry.truck_enteries', compact('truckEntries'));
         } else {
             return redirect()->back();
@@ -98,6 +98,39 @@ class TruckEntryController extends Controller
     {
         $truckEntry = TruckEntry::with('lots')->findOrFail($id);
         return view('admin_panel.Truck_entry.truck_entry_details', compact('truckEntry'));
+    }
+
+    public function destroy($id): JsonResponse
+    {
+        // 1) Load the truck entry and its lots
+        $entry = TruckEntry::with('lotEntries.sales')->findOrFail($id);
+
+        // 2) Check each lotEntry for existing sales
+        $lotsWithSales = $entry->lotEntries
+            ->filter(fn($lot) => $lot->sales->isNotEmpty())
+            ->pluck('id')
+            ->all();
+
+        if (! empty($lotsWithSales)) {
+            return response()->json([
+                'message' => 'Cannot delete this truck entry. ' .
+                    'The following lot IDs have sales and must be cleared first: ' .
+                    implode(', ', $lotsWithSales)
+            ], 422);
+        }
+
+        // 3) No sales found → safe to permanently delete
+        DB::transaction(function () use ($entry) {
+            // Permanently drop all related lot_entries
+            $entry->lotEntries()->forceDelete();
+
+            // Permanently drop the truck entry
+            $entry->forceDelete();
+        });
+
+        return response()->json([
+            'message' => 'Truck entry and its lot entries have been permanently deleted.'
+        ]);
     }
 
     public function edit($id)
@@ -116,7 +149,6 @@ class TruckEntryController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Update truck entry data
         $truckEntry = TruckEntry::findOrFail($id);
         $truckEntry->truck_number = $request->truck_number;
         $truckEntry->driver_name = $request->driver_name;
@@ -125,40 +157,47 @@ class TruckEntryController extends Controller
         $truckEntry->vendor_id = $request->vendor_id;
         $truckEntry->entry_date = $request->entry_date;
         $truckEntry->save();
-        // Loop through lot entries
+
         foreach ($request->category as $key => $category) {
             $variety = $request->variety[$key];
             $unit = $request->unit[$key];
             $unit_in = $request->unit_in[$key];
             $lot_quantity = $request->lot_quantity[$key];
+            $lot_entry_id = $request->lot_entry_id[$key] ?? null;
 
-            // 1. Check if lot_entry_id exists
-            if (!empty($request->lot_entry_id[$key])) {
-                $lotEntry = LotEntry::findOrFail($request->lot_entry_id[$key]);
+            if ($lot_entry_id) {
+                $lotEntry = LotEntry::find($lot_entry_id);
+                if ($lotEntry) {
+                    $lotEntry->lot_quantity = $lot_quantity; // Direct update to the new quantity
+                    $lotEntry->total_units = $lot_quantity;
+                    $lotEntry->save();
+                }
             } else {
-                // 2. Try to find existing entry with same truck_id + all matching fields
-                $lotEntry = LotEntry::where('truck_id', $truckEntry->id)
+                $existingLot = LotEntry::where('truck_id', $truckEntry->id)
                     ->where('category', $category)
                     ->where('variety', $variety)
                     ->where('unit', $unit)
                     ->where('unit_in', $unit_in)
                     ->first();
-            }
 
-            // 3. If found → update, else create new
-            if ($lotEntry) {
-                $lotEntry->lot_quantity = $lot_quantity;
-            } else {
-                $lotEntry = new LotEntry();
-                $lotEntry->truck_id = $truckEntry->id;
-                $lotEntry->category = $category;
-                $lotEntry->variety = $variety;
-                $lotEntry->unit = $unit;
-                $lotEntry->unit_in = $unit_in;
-                $lotEntry->lot_quantity = $lot_quantity;
+                if ($existingLot) {
+                    // Update existing lot entry directly
+                    $existingLot->lot_quantity = $lot_quantity;
+                    $existingLot->total_units = $lot_quantity;
+                    $existingLot->save();
+                } else {
+                    // Create new lot entry
+                    $lotEntry = new LotEntry();
+                    $lotEntry->truck_id = $truckEntry->id;
+                    $lotEntry->category = $category;
+                    $lotEntry->variety = $variety;
+                    $lotEntry->unit = $unit;
+                    $lotEntry->unit_in = $unit_in;
+                    $lotEntry->lot_quantity = $lot_quantity;
+                    $lotEntry->total_units = $lot_quantity;
+                    $lotEntry->save();
+                }
             }
-
-            $lotEntry->save();
         }
 
         return redirect()->back()->with('success', 'Truck Entry updated successfully');

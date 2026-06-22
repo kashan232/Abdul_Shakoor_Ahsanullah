@@ -12,15 +12,20 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Daily Database Backup at 11:59 PM
+        $schedule->call(function () {
+            \App\Http\Controllers\BackupController::sendEmailBackup();
+        })->dailyAt('23:59');
     }
-
+    protected $commands = [
+        \App\Console\Commands\MakeHelper::class,
+    ];
     /**
      * Register the commands for the application.
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
