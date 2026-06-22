@@ -1,9 +1,80 @@
-<div class="sidebar bg--dark">
-    <button class="res-sidebar-close-btn"><i class="la la-times"></i></button>
+<style>
+    /* Premium Sidebar Colors Only (Layout preserved) */
+    .sidebar { 
+        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%) !important; 
+    }
+    
+    /* User Provided SlimScroll and Active State CSS */
+    .sidebar .slimScrollDiv .slimScrollBar {
+        background-color: #4ade80 !important;
+        width: 5px !important;
+        opacity: 1 !important;
+    }
+
+    .sidebar__menu .sidebar-menu-item .side-menu--open, 
+    .sidebar__menu .sidebar-menu-item.active>a {
+        background-color: #4ade80 !important;
+    }
+
+    /* Only overriding text and background colors */
+    .sidebar .nav-link, .sidebar .menu-title, .sidebar-submenu .nav-link { 
+        color: #94a3b8 !important; 
+    }
+    .sidebar .menu-icon { 
+        color: #64748b !important; 
+    }
+    
+    .sidebar .sidebar-menu-item > a:hover { 
+        background-color: rgba(34, 197, 94, 0.1) !important; 
+    }
+    
+    /* Target ALL active/open states that might have yellow */
+    .sidebar .sidebar-menu-item.active > a,
+    .sidebar .sidebar-menu-item.active > a:hover,
+    .sidebar .sidebar-menu-item.open > a,
+    .sidebar .sidebar-menu-item.show > a,
+    .sidebar .sidebar-dropdown > a[aria-expanded="true"],
+    .sidebar .sidebar-dropdown.active > a {
+        border-color: #4ade80 !important;
+    }
+    
+    .sidebar .sidebar-menu-item.active > a::before,
+    .sidebar .sidebar-dropdown > a[aria-expanded="true"]::before,
+    .sidebar .sidebar-menu-item.active > a::after {
+        background-color: #4ade80 !important;
+        border-color: #4ade80 !important;
+    }
+
+    /* Keep text dark when active/open since background is now solid #4ade80 */
+    .sidebar .sidebar-menu-item.active > a .menu-title, 
+    .sidebar .sidebar-menu-item.active > a .menu-icon, 
+    .sidebar .sidebar-dropdown > a[aria-expanded="true"] .menu-title,
+    .sidebar .sidebar-dropdown > a[aria-expanded="true"] .menu-icon { 
+        color: #0f172a !important; 
+    }
+    
+    .sidebar .sidebar-menu-item > a:hover .menu-title, 
+    .sidebar .sidebar-menu-item > a:hover .menu-icon { 
+        color: #4ade80 !important; 
+    }
+
+    /* Submenu Active State (Darker Green instead of Yellow) */
+    .sidebar .sidebar-submenu .sidebar-menu-item.active > a {
+        background-color: #16a34a !important;
+    }
+    .sidebar .sidebar-submenu .sidebar-menu-item.active > a .menu-title,
+    .sidebar .sidebar-submenu .sidebar-menu-item.active > a .menu-icon {
+        color: #ffffff !important;
+    }
+</style>
+<div class="sidebar">
+    <button class="res-sidebar-close-btn" style="color: #fff;"><i class="la la-times"></i></button>
     <div class="sidebar__inner">
         <div class="sidebar__logo">
-            <a href="#" class="sidebar__main-logo">
-                <img src="{{ asset('logo_white.png') }}" alt="image">
+            <a href="#" class="sidebar__main-logo" style="text-decoration: none;">
+                <div style="font-size: 24px; font-weight: 800; color: #f8fafc; padding: 15px 0; text-align: center; text-transform: uppercase; letter-spacing: 2px;">
+                    AU & <span style="color: #4ade80;">Brothers</span>
+                </div>
             </a>
         </div>
         <div class="sidebar__menu-wrapper" id="sidebar__menuWrapper">
@@ -462,10 +533,9 @@
             </ul>
             @endif
 
-            <div class="text-center mb-3 text-uppercase">
-                <span class="text--warning">Jan</span>
-                <span class="text--primary">Muhammad</span>
-                <span class="text--warning">CO</span>
+            <div class="text-center mb-3 text-uppercase" style="margin-top: 20px;">
+                <span class="text--warning">AU &</span>
+                <span class="text--primary">Brothers</span>
             </div>
         </div>
     </div>

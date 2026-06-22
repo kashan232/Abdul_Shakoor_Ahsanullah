@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Login </title>
+    <title> AU & Brothers | Login </title>
     <style>
         @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
 
@@ -21,29 +21,39 @@
             align-items: center;
             justify-content: center;
             padding: 0 20px;
-            background: #ddd;
-            background: url('background3.jpg');
+            background: url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1920&q=80');
             background-repeat: no-repeat;
             background-size: cover;
             background-position: center;
+            background-attachment: fixed;
         }
         body::before {
             content: '';
             width: 100%;
             height: 100%;
-            background: #0000006e;
+            background: rgba(0, 0, 0, 0.7);
             position: absolute;
+            z-index: 1;
         }
         .wrapper {
-
-
             position: relative;
+            z-index: 2;
             max-width: 430px;
             width: 100%;
-            background: #fff;
-            padding: 21px 21px;
-            border-radius: 6px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .wrapper .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #22c55e;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .wrapper h2 {
@@ -51,21 +61,8 @@
             font-size: 22px;
             font-weight: 600;
             color: #333;
-        }
-
-        .wrapper h2::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            height: 3px;
-            width: 48px;
-            border-radius: 12px;
-            background: #000;
-        }
-
-        .wrapper form {
-            margin-top: 30px;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
         .wrapper form .input-box {
@@ -73,77 +70,37 @@
             margin: 18px 0;
         }
 
-        form .input-box select {
-            height: 100%;
-            width: 100%;
-            outline: none;
-            padding: 0 15px;
-            font-size: 17px;
-            font-weight: 400;
-            color: #333;
-            border: 1.5px solid #C7BEBE;
-            border-bottom-width: 2.5px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            background: #fff;
-        }
-
         form .input-box input {
             height: 100%;
             width: 100%;
             outline: none;
             padding: 0 15px;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 400;
             color: #333;
-            border: 1.5px solid #C7BEBE;
-            border-bottom-width: 2.5px;
+            border: 1.5px solid #ccc;
             border-radius: 6px;
             transition: all 0.3s ease;
         }
 
         .input-box input:focus,
         .input-box input:valid {
-            border-color: #000;
-        }
-
-        form .policy {
-            display: flex;
-            align-items: center;
-        }
-
-        form h3 {
-            color: #707070;
-            font-size: 14px;
-            font-weight: 500;
-            margin-left: 10px;
+            border-color: #22c55e;
         }
 
         .input-box.button input {
             color: #fff;
             letter-spacing: 1px;
             border: none;
-            background: #000;
+            background: #22c55e;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 18px;
+            border-radius: 6px;
         }
 
         .input-box.button input:hover {
-            background: #000;
-        }
-
-        form .text h3 {
-            color: #333;
-            width: 100%;
-            text-align: center;
-        }
-
-        form .text h3 a {
-            color: #4070f4;
-            text-decoration: none;
-        }
-
-        form .text h3 a:hover {
-            text-decoration: underline;
+            background: #16a34a;
         }
 
         .alert {
@@ -159,13 +116,28 @@
             background-color: #f8d7da;
             border-color: #f5c6cb;
         }
-    </style>
-    <div class="wrapper">
-        <div style="width:100%; text-align:center;">
-            <img src="logo_white.png" alt="image" style="width: 130px; background:#000;border-radius:100px;padding:4px;">
 
-        </div>
-        <!-- <h2>Admin Login</h2> -->
+        .forgot-pass {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .forgot-pass a {
+            color: #22c55e;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-pass a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="logo-text">AU & Brothers</div>
+        <h2>Account Login</h2>
         <form method="POST" action="{{ route('login') }}">
             @csrf
             @if ($errors->any())
@@ -177,17 +149,13 @@
             @endif
 
             <div class="input-box">
-                <x-input-label for="email" />
-                <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" placeholder="Email" required autofocus autocomplete="username" />
+                <input id="email" type="email" name="email" value="{{ old('email') }}" placeholder="Email Address" required autofocus autocomplete="username" />
             </div>
             <div class="input-box">
-                <x-input-label for="password" />
-                <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" placeholder="Password" required autocomplete="current-password" />
+                <input id="password" type="password" name="password" placeholder="Password" required autocomplete="current-password" />
             </div>
-            <div>
-                <a href="#" class="txt1">
-                    Forgot Password?
-                </a>
+            <div class="forgot-pass">
+                <a href="#">Forgot Password?</a>
             </div>
 
             <div class="input-box button">
@@ -197,6 +165,6 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
         crossorigin="anonymous"></script>
-    </body>
+</body>
 
 </html>

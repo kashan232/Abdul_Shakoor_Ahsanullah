@@ -10,6 +10,7 @@
             <div class="bodywrapper__inner">
                 <div class="d-flex mb-30 flex-wrap gap-3 justify-content-between align-items-center">
                     <h6 class="page-title">Truck Entries</h6>
+                    <a href="{{ route('Truck-Entry') }}" class="btn btn-sm btn-success fw-bold"><i class="fas fa-plus"></i> Add New Truck</a>
                 </div>
 
                 <div class="card">
@@ -22,6 +23,7 @@
                                         <th>Truck Number</th>
                                         <th>Driver Name</th>
                                         <th>Vendor</th>
+                                        <th>Lot Details (Avail/Total)</th>
                                         <th>Entry Date</th>
                                         <th>Action</th>
                                     </tr>
@@ -33,6 +35,24 @@
                                         <td>{{ $entry->truck_number }}</td>
                                         <td>{{ $entry->driver_name }}</td>
                                         <td>{{ $entry->vendor_id }}</td>
+                                        <td>
+                                            @if($entry->lots && $entry->lots->count() > 0)
+                                                <div class="d-flex flex-column gap-1" style="min-width: 200px;">
+                                                    @foreach($entry->lots as $lot)
+                                                    <div class="d-flex justify-content-between align-items-center" style="font-size: 12px; border-bottom: 1px solid #f1f1f1; padding-bottom: 4px;">
+                                                        <span><strong>{{ $lot->category }}</strong> <span class="text-muted" style="font-size: 11px;">({{ $lot->variety }})</span></span>
+                                                        <span>
+                                                            <span style="color: #0f5132; font-weight: 700;" title="Total Received">{{ $lot->total_units }}</span> / 
+                                                            <span class="text-danger fw-bold" title="Available Balance">{{ $lot->lot_quantity }}</span> 
+                                                            <span class="text-muted" style="font-size: 11px;">{{ $lot->unit_in }}</span>
+                                                        </span>
+                                                    </div>
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <span class="text-muted">No Lots</span>
+                                            @endif
+                                        </td>
                                         <td>{{ date('d-m-Y', strtotime($entry->entry_date)) }}</td>
                                         <td>
                                             <a href="{{ route('Truck-Entry.Show',   $entry->id) }}" class="btn btn-dark btn-sm">View</a>

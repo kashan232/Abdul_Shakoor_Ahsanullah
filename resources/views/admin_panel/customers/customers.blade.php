@@ -93,7 +93,7 @@
                 </div>
                 <!-- Create Update Modal -->
                 <div class="modal fade" id="cuModal">
-                    <div class="modal-dialog" role="document">
+                    <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title"></h5>
@@ -105,29 +105,43 @@
                             <form action="{{ route('store-customer') }}" method="POST">
                                 @csrf
                                 <div class="modal-body">
-                                    <div class="form-group">
-                                        <label>Name</label>
-                                        <input type="text" class="form-control" name="customer_name" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Urdu Name</label> <!-- Add this -->
-                                        <input type="text" class="form-control" name="customer_name_urdu">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Mobile</label>
-                                        <input type="text" class="form-control" name="customer_phone">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>City</label>
-                                        <input type="text" class="form-control" name="city">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Area</label>
-                                        <input type="text" class="form-control" name="area">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Opening Balance</label>
-                                        <input type="text" class="form-control" name="opening_balance">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Name</label>
+                                                <input type="text" class="form-control" name="customer_name" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Urdu Name</label> <!-- Add this -->
+                                                <input type="text" class="form-control" name="customer_name_urdu">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Mobile</label>
+                                                <input type="text" class="form-control" name="customer_phone">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>City</label>
+                                                <input type="text" class="form-control" name="city">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Area</label>
+                                                <input type="text" class="form-control" name="area">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Opening Balance</label>
+                                                <input type="text" class="form-control" name="opening_balance">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -139,7 +153,7 @@
                 </div>
 
                 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalLabel">Edit Customer</h5>
@@ -150,48 +164,65 @@
                             <form action="{{ route('update-customer') }}" method="POST">
                                 @csrf
                                 <div class="modal-body">
-                                    <div class="form-group">
-                                        <label>Name</label>
-                                        <input type="hidden" name="customer_id" id="customer_id">
-                                        <input type="text" class="form-control" id="edit_customer_name" name="customer_name" required>
-                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Name</label>
+                                                <input type="hidden" name="customer_id" id="customer_id">
+                                                <input type="text" class="form-control" id="edit_customer_name" name="customer_name" required>
+                                            </div>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <label>Urdu Name</label> <!-- Add this -->
-                                        <input type="text" class="form-control" id="edit_customer_name_urdu" name="customer_name_urdu">
-                                    </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Urdu Name</label> <!-- Add this -->
+                                                <input type="text" class="form-control" id="edit_customer_name_urdu" name="customer_name_urdu">
+                                            </div>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <label>Mobile</label>
-                                        <input type="text" class="form-control" id="edit_customer_phone" name="customer_phone">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>City</label>
-                                        <input type="text" class="form-control" name="city" id="customer_city">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Area</label>
-                                        <input type="text" class="form-control" name="area" id="customer_area">
-                                    </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Mobile</label>
+                                                <input type="text" class="form-control" id="edit_customer_phone" name="customer_phone">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>City</label>
+                                                <input type="text" class="form-control" name="city" id="customer_city">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Area</label>
+                                                <input type="text" class="form-control" name="area" id="customer_area">
+                                            </div>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <label>Opening Balance (Read Only)</label>
-                                        <input type="text" class="form-control" name="opening_balance" id="edit_opening_balance" readonly>
-                                    </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Opening Balance (Read Only)</label>
+                                                <input type="text" class="form-control" name="opening_balance" id="edit_opening_balance" readonly>
+                                            </div>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <label>Recape Type</label>
-                                        <select class="form-control" name="recape_type" id="recape_type">
-                                            <option value="plus">Plus</option>
-                                            <option value="minus">Minus</option>
-                                        </select>
-                                    </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Recape Type</label>
+                                                <select class="form-control" name="recape_type" id="recape_type">
+                                                    <option value="plus">Plus</option>
+                                                    <option value="minus">Minus</option>
+                                                </select>
+                                            </div>
+                                        </div>
 
-                                    <div class="form-group">
-                                        <label>Recape Opening Balance</label>
-                                        <input type="number" class="form-control" name="recape_opening_balance" id="recape_opening_balance" placeholder="Enter amount to adjust">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Recape Opening Balance</label>
+                                                <input type="number" class="form-control" name="recape_opening_balance" id="recape_opening_balance" placeholder="Enter amount to adjust">
+                                            </div>
+                                        </div>
                                     </div>
-
                                 </div>
                                 <div class="modal-footer">
                                     <button type="submit" class="btn btn--primary w-100 h-45">Update</button>

@@ -12,40 +12,6 @@
         <!-- navbar-wrapper start -->
         @include('admin_panel.include.navbar_include')
         <!-- navbar-wrapper end -->
-        <!-- Recovery Modal -->
-        <div class="modal fade" id="recoveryModal" tabindex="-1" aria-labelledby="recoveryModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="recoveryModalLabel">Add Recovery</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="recoveryForm">
-                            @csrf
-                            <input type="hidden" id="ledger_id" name="ledger_id">
-                            <div class="mb-3">
-                                <label for="closing_balance" class="form-label">Closing Balance</label>
-                                <input type="text" class="form-control" id="closing_balance" name="closing_balance" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="amount_paid" class="form-label">Amount Paid</label>
-                                <input type="number" class="form-control" id="amount_paid" name="amount_paid" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <input type="text" class="form-control" id="description" name="description" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="date" class="form-label">Date</label>
-                                <input type="date" class="form-control" id="date" name="date" required>
-                            </div>
-                            <button type="submit" class="btn btn-success">Save Recovery</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="body-wrapper">
             <div class="bodywrapper__inner">
@@ -68,7 +34,6 @@
                                                 <th>Previous Balance</th>
                                                 <th>Closing Balance</th>
                                                 <th>Updated At</th>
-                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -81,13 +46,6 @@
 
                                                 <td id="closing_balance_{{ $ledger->id }}">{{ number_format($ledger->closing_balance, 0) }}</td>
                                                 <td>{{ $ledger->updated_at->format('Y-m-d H:i:s') }}</td>
-                                                <td>
-                                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#recoveryModal"
-                                                        data-id="{{ $ledger->customer_id }}"
-                                                        data-closing-balance="{{ $ledger->closing_balance }}">
-                                                        Add Recovery
-                                                    </button>
-                                                </td>
                                             </tr>
                                             @empty
                                             <tr>
@@ -105,41 +63,3 @@
         </div><!-- body-wrapper end -->
     </div>
     @include('admin_panel.include.footer_include')
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var recoveryModal = document.getElementById('recoveryModal');
-            recoveryModal.addEventListener('show.bs.modal', function(event) {
-                var button = event.relatedTarget;
-                var ledgerId = button.getAttribute('data-id');
-                var closingBalance = button.getAttribute('data-closing-balance');
-
-                document.getElementById('ledger_id').value = ledgerId;
-                document.getElementById('closing_balance').value = closingBalance;
-            });
-
-            document.getElementById('recoveryForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                var formData = new FormData(this);
-                fetch("{{ route('customer-recovery-store') }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
-                        },
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            var ledgerId = document.getElementById('ledger_id').value;
-                            var newClosingBalance = data.new_closing_balance;
-                            document.getElementById('closing_balance_' + ledgerId).innerText = newClosingBalance;
-                            var recoveryModal = bootstrap.Modal.getInstance(document.getElementById('recoveryModal'));
-                            recoveryModal.hide();
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
-        });
-    </script>

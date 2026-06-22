@@ -116,66 +116,8 @@
     })(jQuery);
 </script>
 
-<script>
-    var Tawk_API = Tawk_API || {},
-        Tawk_LoadStart = new Date();
-    (function() {
-        var s1 = document.createElement("script"),
-            s0 = document.getElementsByTagName("script")[0];
-        s1.async = true;
-        s1.src = 'https://embed.tawk.to/5fe0b9b2a8a254155ab5421d/1eq2tap1m';
-        s1.charset = 'UTF-8';
-        s1.setAttribute('crossorigin', '*');
-        s0.parentNode.insertBefore(s1, s0);
-    })();
-</script>
-
-<script>
-    if (window.top != window.self) {
-        document.body.innerHTML += '<div style="position:fixed;top:0;width:100%;z-index:9999999;background:#f8d7da;color:#721c24;text-align:center; padding: 20px;"><p style="font-size:20px; font-weight: bold;">You are using this website under an external iframe!!</p><p style="font-size:16px; margin-top: 20px;">for a better experience, please browse directly instead of an external iframe.</p><a href="' + window.self.location + '" target="_blank" style=" margin-top:20px; color: #fff;background-color: #dc3545; padding: 5px 10px; border-radius: 5px; text-decoration: none;">Browse Directly</a></div>';
-    }
-</script>
-
-
-<script>
-    adroll_adv_id = "YXRNNTO7ZBAMFBH67UUE5M";
-    adroll_pix_id = "MMQQDWGN25EXPHGRPA3NLR";
-    adroll_version = "2.0";
-    (function(w, d, e, o, a) {
-        w.__adroll_loaded = true;
-        w.adroll = w.adroll || [];
-        w.adroll.f = ['setProperties', 'identify', 'track'];
-        var roundtripUrl = "https://s.adroll.com/j/" + adroll_adv_id +
-            "/roundtrip.js";
-        for (a = 0; a < w.adroll.f.length; a++) {
-            w.adroll[w.adroll.f[a]] = w.adroll[w.adroll.f[a]] || (function(n) {
-                return function() {
-                    w.adroll.push([n, arguments])
-                }
-            })(w.adroll.f[a])
-        }
-        e = d.createElement('script');
-        o = d.getElementsByTagName('script')[0];
-        e.async = 1;
-        e.src = roundtripUrl;
-        o.parentNode.insertBefore(e, o);
-    })(window, document);
-    adroll.track("pageView");
-</script>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-1ME4K0RD7K"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-        dataLayer.push(arguments);
-    }
-    gtag('js', new Date());
-
-    gtag('config', 'G-1ME4K0RD7K');
-</script>
-<script src="https://script.viserlab.com/torylab/assets/admin/js/vendor/apexcharts.min.js"></script>
+<!-- Tracking scripts removed for performance -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <script>
     "use strict";
@@ -281,12 +223,23 @@
     // function for active deactive sidebar option
     let sidebarItems = document.querySelectorAll(".sidebar-menu-item a");
 
-sidebarItems.forEach(function (item) {
-    // Check if the link matches the current URL
-    if (item.href === window.location.href) {
-        item.parentElement.classList.add("active");
-    }
-});
+    sidebarItems.forEach(function (item) {
+        // Check if the link matches the current URL
+        if (item.href === window.location.href) {
+            item.parentElement.classList.add("active");
+            
+            // Expand the parent dropdown category
+            let submenu = item.closest('.sidebar-submenu');
+            if (submenu) {
+                submenu.style.display = 'block';
+                let dropdown = submenu.closest('.sidebar-dropdown');
+                if (dropdown) {
+                    dropdown.classList.add("active");
+                    dropdown.classList.add("open");
+                }
+            }
+        }
+    });
     
 </script>
 

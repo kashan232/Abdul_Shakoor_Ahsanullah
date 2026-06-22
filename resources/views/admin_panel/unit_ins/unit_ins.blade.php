@@ -18,7 +18,7 @@
                     <h6 class="page-title">Units-In</h6>
                     <div class="d-flex flex-wrap justify-content-end gap-2 align-items-center breadcrumb-plugins">
 
-                        <button type="button" class="btn btn-sm btn-outline--primary cuModalBtn"
+                        <button type="button" class="btn btn-outline--primary cuModalBtn fw-bold"
                             data-modal_title="Add New Unit-In">
                             <i class="las la-plus"></i>Add New </button>
 
@@ -52,7 +52,7 @@
                                                 <td>{{ $unit->unit_in_urdu }}</td> <!-- Display the Urdu name -->
                                                 <td>
                                                     <div class="button--group">
-                                                        <button type="button" class="btn btn-sm btn-outline--primary editunitBtn" data-toggle="modal" data-modal_title="Edit Unit-In"
+                                                        <button type="button" class="btn btn-outline--primary editunitBtn fw-bold" data-toggle="modal" data-modal_title="Edit Unit-In"
                                                             data-has_status="1" data-target="#editunit" data-unit-id="{{ $unit->id }}" data-unit-name="{{ $unit->unit_in }}"
                                                             data-unit-urdu="{{ $unit->unit_in_urdu }}">
                                                             <i class="la la-pencil"></i>Edit </button>
@@ -73,7 +73,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title"><span class="type"></span> <span>Add Unit</span></h5>
+                                <h5 class="modal-title"><span class="type"></span> <span>Add Unit-In</span></h5>
                                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                     <i class="las la-times"></i>
                                 </button>
@@ -103,7 +103,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="editunitLabel">Edit Unit</h5>
+                                <h5 class="modal-title" id="editunitLabel">Edit Unit-In</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>

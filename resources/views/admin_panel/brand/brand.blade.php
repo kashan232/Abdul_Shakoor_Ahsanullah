@@ -18,7 +18,7 @@
                     <h6 class="page-title">Variety</h6>
                     <div class="d-flex flex-wrap justify-content-end gap-2 align-items-center breadcrumb-plugins">
 
-                        <button type="button" class="btn btn-sm btn-outline--primary cuModalBtn"
+                        <button type="button" class="btn btn-outline--primary cuModalBtn fw-bold"
                             data-modal_title="Add New Variety">
                             <i class="las la-plus"></i>Add New </button>
 
@@ -41,7 +41,6 @@
                                                 <th>S.N.</th>
                                                 <th>Name(Eng)</th>
                                                 <th>Name(Urdu)</th>
-                                                <th>Products</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -51,11 +50,10 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $brand->brand }}</td>
                                                 <td>{{ $brand->brand_urdu }}</td>
-                                                <td>{{ $brand->products_count }}</td>
                                                 <td>
                                                     <div class="button--group">
                                                         <button type="button"
-                                                            class="btn btn-sm btn-outline--primary editbrandBtn" data-toggle="modal"
+                                                            class="btn btn-outline--primary editbrandBtn fw-bold" data-toggle="modal"
                                                             data-modal_title="Edit Brand" data-has_status="1"
                                                             data-target="#editbrand" data-brand-id="{{ $brand->id }}" data-brand-name="{{ $brand->brand }}" data-brand-name-urdu="{{ $brand->brand_urdu }}">
                                                             <i class="la la-pencil"></i>Edit </button>
@@ -137,7 +135,7 @@
                     <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title">Import Brand</h4>
+                                <h4 class="modal-title">Import Variety</h4>
                                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                     <i class="la la-times" aria-hidden="true"></i>
                                 </button>

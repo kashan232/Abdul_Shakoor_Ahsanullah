@@ -80,7 +80,7 @@
                                     <input type="date" class="form-control" id="end_date">
                                 </div>
                                 <div class="col-md-12">
-                                    <button type="button" class="btn btn-primary w-100" id="filterSales">Search</button>
+                                    <button type="button" class="btn btn--primary w-100" id="filterSales">Search</button>
                                 </div>
                             </div>
                         </form>
@@ -194,16 +194,22 @@
                         var closingBalance = parseFloat(response.closing_balance || 0);
                         var receiptHtml = `
 <div class="invoice-box" style="direction: rtl; text-align: right; border: 2px solid #000; max-width: 360px; margin: 0 auto; padding: 10px; font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', sans-serif;">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <div class="d-flex flex-column text-start">
-            <span style="font-weight: bold;">03223014221</span>
-            <span style="font-weight: bold;">03213022033</span>
+    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px;">
+        <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; line-height: 1.4;">
+            <div style="text-align: right;">
+                <div style="color: #dc3545; font-size: 14px; font-family: sans-serif; margin-bottom: 2px;">A.U & BROTHERS</div>
+                <div>احسان اللہ: <span dir="ltr">0300-9378192</span></div>
+                <div><span dir="ltr">0313-9378192</span></div>
+            </div>
+            <div style="text-align: left; margin-top: 15px;">
+                <div>امان اللہ: <span dir="ltr">0321-3045286</span></div>
+                <div>عطاء اللہ: <span dir="ltr">0308-3002916</span></div>
+                <div>سیف اللہ: <span dir="ltr">0334-9378192</span></div>
+            </div>
         </div>
-        <img src="logo-bill.png" alt="Logo" style="max-height: 75px;">
-        <div class="d-flex flex-column text-end">
-            <span style="font-weight: bold;">03213061917</span>
-            <span style="font-weight: bold;">03118661606</span>
-        </div>
+        <h2 style="margin: 5px 0 0 0; font-size: 24px; font-weight: 900; line-height: 1.2; color: #000;">ماما عبد الشکور احسان اللہ اینڈ کو</h2>
+        <div style="font-size: 14px; font-weight: bold; margin-top: 2px;">آلو، پیاز، لہسن کمیشن ایجنٹس</div>
+        <div style="font-size: 12px; margin-top: 3px;">دکان نمبر 227-226-200 نیو سبزی مارکیٹ ہالا ناکہ حیدرآباد</div>
     </div>
 
     <div class="header-info row">
@@ -297,10 +303,9 @@
             <td><strong></strong></td>
         </tr>
     </table>
-    {{--<div style="margin-top: 15px; padding-top: 10px; border-top: 2px solid black; font-size: 12px; text-align: center;">
-    <strong> Designed & Developed by ProWave Software Solutions</strong> +92 317 3836223 | +92 317 3859647
-</div>--}}
-
+    <div style="margin-top: 15px; padding-top: 10px; border-top: 2px solid black; font-size: 12px; text-align: center; direction: ltr;">
+        <strong>Powered by ProWave Technologies</strong> | 03173859647
+    </div>
 </div>`;
                         $("#receiptArea").html(receiptHtml);
                     },

@@ -18,7 +18,7 @@
                     <h6 class="page-title">Units</h6>
                     <div class="d-flex flex-wrap justify-content-end gap-2 align-items-center breadcrumb-plugins">
 
-                        <button type="button" class="btn btn-sm btn-outline--primary cuModalBtn"
+                        <button type="button" class="btn btn-outline--primary cuModalBtn fw-bold"
                             data-modal_title="Add New Unit">
                             <i class="las la-plus"></i>Add New </button>
 
@@ -54,7 +54,7 @@
                                                 <td>
                                                     <div class="button--group">
                                                         <button type="button"
-                                                            class="btn btn-sm btn-outline--primary editunitBtn" data-toggle="modal" data-modal_title="Edit Unit"
+                                                            class="btn btn-outline--primary editunitBtn fw-bold" data-toggle="modal" data-modal_title="Edit Unit"
                                                             data-has_status="1" data-target="#editunit" data-unit-id="{{ $unit->id }}" data-unit-name="{{ $unit->unit }}"
                                                             data-unit-urdu="{{ $unit->unit_urdu }}">
                                                             <i class="la la-pencil"></i>Edit </button>

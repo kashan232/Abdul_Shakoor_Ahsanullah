@@ -118,7 +118,7 @@
 
     <style>
         .clickable-row:hover {
-            background-color: #f7faff;
+            background-color: rgba(34, 197, 94, 0.05) !important;
             cursor: pointer;
             transition: 0.3s ease-in-out;
         }
@@ -129,8 +129,8 @@
         }
 
         thead.bg-white th {
-            background-color: #fff !important;
-            color: #000;
+            background-color: #f8fafc !important;
+            color: #475569 !important;
         }
 
         .clickable-sale {
@@ -139,17 +139,18 @@
         }
 
         .clickable-sale:hover {
-            background-color: #f9f9f9;
+            background-color: rgba(34, 197, 94, 0.05);
         }
 
         .customer-link {
             text-decoration: none;
-            color: #007bff;
-            font-weight: 500;
+            color: #0f172a;
+            font-weight: 600;
         }
 
         .customer-link:hover {
-            text-decoration: underline;
+            text-decoration: none;
+            color: #22c55e;
         }
 
         .table td,
@@ -158,11 +159,14 @@
         }
 
         .bg-gradient-primary {
-            background: linear-gradient(45deg, #1e88e5, #42a5f5);
+            background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%) !important;
+            color: #ffffff !important;
+            border-bottom: 2px solid #22c55e !important;
         }
 
         .bg-gradient-secondary {
-            background: linear-gradient(45deg, #6c757d, #a0a5ab);
+            background: linear-gradient(90deg, #16a34a 0%, #4ade80 100%) !important;
+            color: #ffffff !important;
         }
 
         /* ⭐ NEW SCROLL STYLE FOR CUSTOMER LIST */
@@ -234,8 +238,8 @@
 
                     $('#customerDetailContent').html(`
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped mb-0">
-                        <thead class="bg-white text-center fw-semibold text-dark">
+                    <table class="table mb-0">
+                        <thead class="text-center fw-semibold">
                             <tr>
                                 <th>Date</th>
                                 <th>Type</th>

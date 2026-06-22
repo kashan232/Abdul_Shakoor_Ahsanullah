@@ -32,8 +32,6 @@
                                                 <th>Opening Balance</th>
                                                 <th>Previous Balance</th>
                                                 <th>Closing Balance</th>
-                                                <th>Action</th>
-
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -44,16 +42,6 @@
                                                 <td>{{ $ledger->opening_balance }}</td>
                                                 <td>{{ $ledger->previous_balance }}</td>
                                                 <td>{{ $ledger->closing_balance }}</td>
-                                                <td>
-                                                    <button type="button" class="btn btn-sm btn-primary paymentBtn"
-                                                        data-supplier-id="{{ $ledger->supplier_id }}"
-                                                        data-closing="{{ $ledger->closing_balance }}"
-                                                        data-name="{{ $ledger->supplier->name }}"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#paymentModal">
-                                                        Payment
-                                                    </button>
-                                                </td>
                                             </tr>
                                             @endforeach
                                         </tbody>

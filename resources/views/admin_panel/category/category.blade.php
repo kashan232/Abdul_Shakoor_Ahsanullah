@@ -19,7 +19,7 @@
                 <div class="d-flex mb-30 flex-wrap gap-3 justify-content-between align-items-center">
                     <h6 class="page-title">Products</h6>
                     <div class="d-flex flex-wrap justify-content-end gap-2 align-items-center breadcrumb-plugins">
-                        <button type="button" class="btn btn-sm btn-outline--primary cuModalBtn" data-modal_title="Add New Category">
+                        <button type="button" class="btn btn-outline--primary cuModalBtn fw-bold" data-modal_title="Add New Product">
                             <i class="las la-plus"></i>Add New </button>
                     </div>
                 </div>
@@ -40,7 +40,6 @@
                                                 <th>S.N.</th>
                                                 <th>Name</th>
                                                 <th>Urdu</th>
-                                                <th>Products</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -50,11 +49,10 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $categories->category }}</td>
                                                 <td>{{ $categories->category_urdu ?? '-' }}</td>
-                                                <td>{{ $categories->products_count }}</td>
                                                 <td>
                                                     <div class="button--group">
 
-                                                        <button type="button" class="btn btn-sm btn-outline-primary editCategoryBtn"
+                                                        <button type="button" class="btn btn-outline-primary editCategoryBtn fw-bold"
                                                             data-toggle="modal"
                                                             data-target="#editcategory"
                                                             data-category-id="{{ $categories->id }}"
@@ -80,7 +78,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title"><span class="type"></span> <span>Add Category</span></h5>
+                                <h5 class="modal-title"><span class="type"></span> <span>Add Product</span></h5>
                                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                     <i class="las la-times"></i>
                                 </button>
@@ -113,7 +111,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="editcategoryLabel">Edit Category</h5>
+                                <h5 class="modal-title" id="editcategoryLabel">Edit Product</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>

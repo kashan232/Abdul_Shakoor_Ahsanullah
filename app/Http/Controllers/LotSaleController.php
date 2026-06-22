@@ -23,18 +23,12 @@ class LotSaleController extends Controller
 
     public function show_trucks()
     {
-        $trucks = DB::table('truck_entries')
-            ->leftJoin('lot_entries', 'truck_entries.id', '=', 'lot_entries.truck_id')
-            ->select(
-                'truck_entries.id',
-                'truck_entries.truck_number',
-                'truck_entries.vendor_id',
-                'truck_entries.entry_date',
-                DB::raw('SUM(lot_entries.lot_quantity) as total_units')
-            )
-            ->groupBy('truck_entries.id', 'truck_entries.truck_number', 'truck_entries.vendor_id', 'truck_entries.entry_date')
-            ->having('total_units', '>', 0)
-            ->get();
+        $trucks = \App\Models\TruckEntry::with('lots')->get()->map(function($truck) {
+            $truck->total_units = $truck->lots->sum('lot_quantity');
+            return $truck;
+        })->filter(function($truck) {
+            return $truck->total_units > 0;
+        });
 
         return view('admin_panel.lot_sale.truck_list', compact('trucks'));
     }

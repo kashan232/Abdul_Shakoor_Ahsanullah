@@ -3,6 +3,49 @@
 <link rel="stylesheet" href="{{ asset('assets/global/css/urdu-keyboard.css') }}">
 <script src="{{ asset('assets/global/js/urdu-keyboard.js') }}"></script>
 
+<style>
+    .card-header-premium {
+        background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%) !important;
+        color: #ffffff !important;
+        border-bottom: 3px solid #22c55e !important;
+        border-radius: 8px 8px 0 0;
+        padding: 1.5rem 2rem;
+    }
+    .table-custom th {
+        background-color: #f1f5f9 !important;
+        color: #1e293b !important;
+        font-weight: 700;
+        border-bottom: 2px solid #cbd5e1 !important;
+    }
+    .table-custom td {
+        vertical-align: middle;
+    }
+    .btn-premium-green {
+        background-color: #22c55e;
+        color: white;
+        border: none;
+        font-weight: 600;
+        box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.3);
+    }
+    .btn-premium-green:hover {
+        background-color: #16a34a;
+        color: white;
+        box-shadow: 0 6px 8px -1px rgba(34, 197, 94, 0.4);
+    }
+    .section-title {
+        color: #1e293b;
+        border-left: 4px solid #22c55e;
+        padding-left: 10px;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    .modal-header-premium {
+        background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%) !important;
+        color: #ffffff !important;
+        border-bottom: 3px solid #22c55e !important;
+    }
+</style>
+
 <body>
     <div class="page-wrapper default-version">
         @include('admin_panel.include.sidebar_include')
@@ -11,9 +54,9 @@
         <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addCustomerModalLabel">Add Customer</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header modal-header-premium">
+                        <h5 class="modal-title text-white" id="addCustomerModalLabel"><i class="fas fa-user-plus me-2"></i> Add Customer</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form id="addCustomerForm">
                         @csrf
@@ -25,7 +68,7 @@
 
                             <div class="form-group">
                                 <label>Urdu Name (Click to Type)</label>
-                                <input type="text" id="customer_name_urdu" name="customer_name_urdu" class="form-control urdu-input" placeholder="مثلاً: محمد فیضان">
+                                <input type="text" id="customer_name_urdu" name="customer_name_urdu" class="form-control urdu-input">
                             </div>
                             <div class="form-group">
                                 <label>Mobile</label>
@@ -44,8 +87,9 @@
                                 <input type="number" step="0.01" class="form-control" name="opening_balance" placeholder="0.00">
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary w-100">Submit</button>
+                        <div class="modal-footer flex-column">
+                            <button type="submit" class="btn btn-primary w-100 mb-2">Submit</button>
+                            <button type="button" class="btn btn-secondary w-100" data-bs-target="#addSaleEntryModal" data-bs-toggle="modal">Back to Sale Entry</button>
                         </div>
                     </form>
                 </div>
@@ -55,18 +99,18 @@
 
         <!-- New Sale Entry Modal -->
         <div class="modal fade" id="addSaleEntryModal" tabindex="-1" aria-labelledby="addSaleEntryModalLabel" aria-hidden="true" style="z-index: 1055;">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addSaleEntryModalLabel">Add Entry to Sale</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header modal-header-premium">
+                        <h5 class="modal-title text-white" id="addSaleEntryModalLabel"><i class="fas fa-cart-plus me-2"></i> Add Entry to Sale</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" id="modal_lot_id">
                         
                         <div class="mb-3">
                             <label class="form-label fw-bold">Select Sale Category</label>
-                            <select id="modal_sale_category" class="form-select bg-light fw-bold" onchange="toggleModalCustomerInput()">
+                            <select id="modal_sale_category" class="form-select bg-light text-dark fw-bold" onchange="toggleModalCustomerInput()">
                                 <option value="credit" selected>CREDIT SALE (Udhaar)</option>
                                 <option value="cash">CASH SALE (Naqad)</option>
                             </select>
@@ -79,12 +123,12 @@
                         <div class="mb-3">
                             <label class="form-label">Search Customer (Name)</label>
                             <div class="input-group">
-                                <input type="text" id="modal_customer_search" class="form-control" list="customerListData" placeholder="Start typing name..." autocomplete="off">
-                                <datalist id="customerListData">
+                                <select id="modal_customer_search" class="form-control select2-modal" style="width: 80%;">
+                                    <option value="" selected>Select Customer...</option>
                                     @foreach($customers->sortBy('customer_name') as $customer)
-                                    <option value="{{ $customer->customer_name }}"></option>
+                                    <option value="{{ $customer->customer_name }}">{{ $customer->customer_name }}</option>
                                     @endforeach
-                                </datalist>
+                                </select>
                                 <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#addCustomerModal" tabindex="-1">
                                     <i class="fas fa-plus"></i>
                                 </button>
@@ -133,55 +177,32 @@
 
         <div class="body-wrapper">
             <div class="bodywrapper__inner">
-                <div class="d-flex mb-4 flex-wrap gap-3 justify-content-between align-items-center">
-                    <h4 class="fw-bold text-primary">Lots Available for Sale</h4>
-                </div>
-                <div class="card shadow-lg p-4">
-                    <div class="card-body">
+                <div class="card shadow-lg border-0 rounded-3">
+                    <div class="card-header-premium d-flex justify-content-between align-items-center">
+                        <h4 class="fw-bold mb-0 text-white"><i class="fas fa-cash-register me-2"></i> Sale Entry Dashboard</h4>
+                        <span class="badge bg-success fs-6 px-3 py-2 shadow-sm" style="border: 1px solid #fff;">
+                            <i class="fas fa-truck me-1"></i> Truck: {{ $truck->truck_number }}
+                        </span>
+                    </div>
+                    <div class="card-body p-4">
                         <div id="alertContainer" class="mt-3"></div>
 
                         <form id="saleForm">
  <!-- changed to id saleForm for JS -->
                             @csrf
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label for="customer_type" class="form-label">Customer Type</label>
-                                    <select class="form-control" id="customer_type" required>
-                                        <option value="" selected disabled>Select Type</option>
-                                        <option value="credit">Credit Customer</option>
-                                        <option value="cash">Cash Customer</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4 mb-3" id="customer_select" style="display: none;">
-                                    <label for="customer" class="form-label">Select Customer</label>
-                                    <div class="d-flex">
-                                        <select id="customer" class="form-select select2-basic">
-                                            <option value="" selected disabled>Select Customer</option>
-                                            @foreach($customers->sortBy('customer_name') as $customer)
-                                            <option value="{{ $customer->id }}" data-number="{{ $customer->customer_phone }}">
-                                                {{ $customer->customer_name }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-
-                                        <button type="button" class="btn btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label for="sale_date" class="form-label fw-bold">Sale Date</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-calendar-alt"></i></span>
+                                        <input type="date" class="form-control fw-bold" id="sale_date" value="{{ date('Y-m-d') }}" required>
                                     </div>
-                                </div>
-                                <div class="col-md-4 mb-3" id="customer_number_container" style="display: none;">
-                                    <label for="customer_number" class="form-label">Customer Number</label>
-                                    <input type="text" class="form-control" id="customer_number" readonly>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="sale_date" class="form-label">Sale Date</label>
-                                    <input type="date" class="form-control" id="sale_date" value="{{ date('Y-m-d') }}" required>
                                 </div>
                             </div>
 
-                            <h4 class="fw-bold text-primary mt-4">Lots Available for Sale (Truck: {{ $truck->truck_number }})</h4>
+                            <h5 class="section-title mt-4">Available Stock</h5>
                             <div class="table-responsive">
-                                <table class="table table-striped">
+                                <table class="table table-hover table-custom border">
                                     <thead>
                                         <tr>
                                             <th>Category</th>
@@ -204,13 +225,13 @@
                                             <td>{{ $lot->lot_quantity }}</td>
                                             <td>
                                                 @if($lot->lot_quantity > 0)
-                                                <button type="button" class="btn btn-success btn-sm"
+                                                <button type="button" class="btn btn-outline-success btn-sm fw-bold"
                                                     onclick="addSaleRow({{ $lot->id }}, '{{ $lot->category }}', '{{ $lot->variety }}', '{{ $lot->unit }}', {{ $lot->lot_quantity }})">
-                                                    Add to Sale
+                                                    <i class="fas fa-plus-circle"></i> Add to Sale
                                                 </button>
                                                 @else
 
-                                                <span class="btn btn-danger text-white btn-sm">Out of Stock</span>
+                                                <span class="badge bg-danger">Out of Stock</span>
                                                 @endif
                                             </td>
                                         </tr>
@@ -219,9 +240,9 @@
                                 </table>
                             </div>
 
-                            <h4 class="fw-bold text-primary mt-4">Sale Details</h4>
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="saleTable">
+                            <h5 class="section-title mt-5">Sale Checkout</h5>
+                            <div class="table-responsive shadow-sm rounded">
+                                <table class="table table-hover table-custom border" id="saleTable">
                                     <thead>
                                         <tr>
                                             <th>Customer Name</th> <!-- NEW column -->
@@ -238,10 +259,10 @@
                                 </table>
                             </div>
 
-                            <div class="d-flex justify-content-between mt-4">
-                                <h5 class="fw-bold">Sub Total: <span id="subtotal">0</span></h5>
-                                <button type="button" class="btn btn-primary" id="submitSale">
-                                    <i class="fas fa-check-circle me-1"></i> Submit Sale
+                            <div class="d-flex justify-content-between align-items-center mt-4 p-3 bg-light rounded border">
+                                <h4 class="fw-bold mb-0 text-dark">Sub Total: <span id="subtotal" class="text-success fs-3">0</span></h4>
+                                <button type="button" class="btn btn-premium-green px-5 py-2 fs-5" id="submitSale">
+                                    <i class="fas fa-check-circle me-2"></i> Submit Final Sale
                                 </button>
                             </div>
                         </form>
@@ -261,30 +282,6 @@
     // Map for high-speed customer lookup (Safe JSON)
     const customerMap = @json($customers->pluck('id', 'customer_name'));
 
-    // ---------- Helper: get top-selected customer id & name ----------
-    function getTopCustomerInfo() {
-        const cust = document.getElementById('customer');
-        if (!cust) return { id: null, name: '' };
-        let id = cust.value || null;
-        let name = '';
-
-        // Try selectedOptions first (modern)
-        if (cust.selectedOptions && cust.selectedOptions.length) {
-            name = cust.selectedOptions[0].text.trim();
-        } else if (cust.options && cust.selectedIndex >= 0) {
-            name = cust.options[cust.selectedIndex].text.trim();
-        } else if (window.jQuery) {
-            // fallback for select2 or other
-            name = $('#customer option:selected').text().trim();
-            id = $('#customer').val() || id;
-        }
-
-        // if default placeholder selected (disabled), make empty
-        if (name === 'Select Customer' || name === '-- Select Customer --' || name === '') name = '';
-
-        return { id, name };
-    }
-
     function getModalCustomerInfo() {
         const cust = document.getElementById('modal_customer');
         if (!cust) return { id: null, name: '' };
@@ -301,6 +298,18 @@
         return { id, name };
     }
     
+    $(document).ready(function() {
+        // Initialize Select2 for modal with correct dropdown parent so it doesn't get hidden behind modal
+        $('.select2-modal').select2({
+            dropdownParent: $('#addSaleEntryModal .modal-body'),
+            width: 'resolve'
+        });
+
+        // Close select2 on modal scroll to prevent detachment issue
+        $('#addSaleEntryModal').on('scroll', function() {
+            $('.select2-modal').select2('close');
+        });
+    });
     </script>
 
 
@@ -354,26 +363,7 @@
     </script>
 
     <script>
-        // Show/hide customer select based on customer_type (original logic)
-        document.getElementById('customer_type').addEventListener('change', function() {
-            let type = this.value;
-            let customerSelect = document.getElementById('customer_select');
-            let customerNumberContainer = document.getElementById('customer_number_container');
 
-            if (type === 'credit') {
-                customerSelect.style.display = 'block';
-                customerNumberContainer.style.display = 'block';
-            } else {
-                customerSelect.style.display = 'none';
-                customerNumberContainer.style.display = 'none';
-            }
-        });
-
-        // keep customer number update
-        document.getElementById('customer').addEventListener('change', function() {
-            let selectedOption = this.options[this.selectedIndex];
-            document.getElementById('customer_number').value = selectedOption.dataset.number || '';
-        });
 
         // ---------- Modal Logic: Open Modal and Fill Data ----------
         function addSaleRow(id, category, variety, unit, lotQuantity) {
@@ -391,14 +381,8 @@
             document.getElementById('modal_available').value = remainingStock;
             
             // Pre-select global customer if one is picked
-            const topCust = getTopCustomerInfo();
-            const searchInput = document.getElementById('modal_customer_search');
-
-            if (topCust.id && topCust.name) {
-                searchInput.value = topCust.name;
-            } else {
-                searchInput.value = '';
-            }
+            const searchInput = $('#modal_customer_search');
+            searchInput.val('').trigger('change');
 
             // Reset inputs
             document.getElementById('modal_quantity').value = '';
@@ -411,11 +395,9 @@
             // Show Modal (JQuery style for better compatibility)
             $('#addSaleEntryModal').modal('show');
 
-
-            // Auto-focus on search input after modal opens
+            // Auto-focus on quantity input after modal opens
             setTimeout(function() {
-                searchInput.focus();
-                searchInput.select();
+                document.getElementById('modal_quantity').focus();
             }, 500);
         }
 
@@ -455,15 +437,12 @@
 
         function toggleModalCustomerInput() {
             let cat = document.getElementById("modal_sale_category").value;
-            let searchInput = document.getElementById("modal_customer_search");
+            let searchInput = $('#modal_customer_search');
             if (cat === "cash") {
-                searchInput.value = "";
-                searchInput.disabled = true;
-                searchInput.placeholder = "Not needed for Cash Sale";
+                searchInput.val(null).trigger('change');
+                searchInput.prop('disabled', true);
             } else {
-                searchInput.disabled = false;
-                searchInput.placeholder = "Start typing name...";
-                searchInput.focus();
+                searchInput.prop('disabled', false);
             }
         }
 
@@ -483,7 +462,7 @@
             // Validation Logic
             if (perRowSaleCategory === 'credit' && !custId) {
                 iziToast.warning({ title: 'Wait', message: 'Credit sale requires a registered customer.' });
-                document.getElementById('modal_customer_search').focus();
+                $('#modal_customer_search').select2('open');
                 return;
             }
             
@@ -541,14 +520,14 @@
             iziToast.success({ title: 'Added', message: `${quantity} units added for ${searchName}`, position: 'topRight', timeout: 1500 });
             
             // Clear inputs for next entry, KEEP Modal open
-            document.getElementById('modal_customer_search').value = '';
+            $('#modal_customer_search').val(null).trigger('change');
             document.getElementById('modal_quantity').value = '';
             document.getElementById('modal_price').value = '';
             document.getElementById('modal_weight').value = '';
             document.getElementById('modal_amount').value = '0.00';
             
-            // Refocus back to customer search
-            document.getElementById('modal_customer_search').focus();
+            // Refocus back to quantity for next entry
+            document.getElementById('modal_quantity').focus();
         }
 
         function updateSubtotal() {
@@ -598,7 +577,7 @@
             });
 
             let saleDate = document.getElementById("sale_date").value;
-            let customerType = document.getElementById("customer_type").value;
+            let customerType = "mixed"; // customer is now selected per row
 
             // Disable button and show loading state
             const btn = document.getElementById("submitSale");

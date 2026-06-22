@@ -19,6 +19,7 @@
                                         <th>Truck Number</th>
                                         <th>Vendor</th>
                                         <th>Arrival Date</th>
+                                        <th>Lot Details (Avail/Total)</th>
                                         <th>Total Available Units</th>
                                         <th>Action</th>
                                     </tr>
@@ -28,12 +29,30 @@
                                     <tr>
                                         <td>{{ $truck->truck_number }}</td>
                                         <td>{{ $truck->vendor_id }}</td>
-                                        <td>{{ $truck->entry_date }}</td>
-                                        <td>{{ $truck->total_units }}</td>
+                                        <td>{{ date('d-m-Y', strtotime($truck->entry_date)) }}</td>
+                                        <td>
+                                            @if($truck->lots && $truck->lots->count() > 0)
+                                                <div class="d-flex flex-column gap-1" style="min-width: 200px;">
+                                                    @foreach($truck->lots as $lot)
+                                                    <div class="d-flex justify-content-between align-items-center" style="font-size: 12px; border-bottom: 1px solid #f1f1f1; padding-bottom: 4px;">
+                                                        <span><strong>{{ $lot->category }}</strong> <span class="text-muted" style="font-size: 11px;">({{ $lot->variety }})</span></span>
+                                                        <span>
+                                                            <span style="color: #0f5132; font-weight: 700;" title="Total Received">{{ $lot->total_units }}</span> / 
+                                                            <span class="text-danger fw-bold" title="Available Balance">{{ $lot->lot_quantity }}</span> 
+                                                            <span class="text-muted" style="font-size: 11px;">{{ $lot->unit_in }}</span>
+                                                        </span>
+                                                    </div>
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <span class="text-muted">No Lots</span>
+                                            @endif
+                                        </td>
+                                        <td><span class="badge bg-success" style="font-size: 14px;">{{ $truck->total_units }}</span></td>
                                         <td>
                                             @if($truck->total_units > 0)
                                             <a href="{{ route('show-Lots', $truck->id) }}" class="btn btn-primary btn-sm">Sale</a>
-						<a href="{{ route('lot.sale.bulk', $truck->id) }}" class="btn btn-info btn-sm ms-1">Bulk Sale</a>
+						{{-- <a href="{{ route('lot.sale.bulk', $truck->id) }}" class="btn btn-info btn-sm ms-1">Bulk Sale</a> --}}
 					  @else
                                             <span class="btn btn-danger btn-sm">Units Sold</span>
                                             @endif

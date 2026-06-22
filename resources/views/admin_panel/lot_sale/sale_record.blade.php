@@ -1,5 +1,53 @@
 @include('admin_panel.include.header_include')
 
+<style>
+    .card-header-premium {
+        background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%) !important;
+        color: #ffffff !important;
+        border-bottom: 3px solid #22c55e !important;
+        border-radius: 8px 8px 0 0;
+        padding: 1.5rem 2rem;
+    }
+    .card-header-lot {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 1rem 1.5rem;
+    }
+    .table-custom th {
+        background-color: #f1f5f9 !important;
+        color: #1e293b !important;
+        font-weight: 700;
+        border-bottom: 2px solid #cbd5e1 !important;
+    }
+    .table-custom td {
+        vertical-align: middle;
+    }
+    .stat-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 10px 15px;
+        text-align: center;
+        flex: 1;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .stat-box .title {
+        font-size: 11px;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    .stat-box .value {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .stat-box.success .value { color: #16a34a; }
+    .stat-box.danger .value { color: #dc2626; }
+    .stat-box.primary .value { color: #2563eb; }
+</style>
+
 <body>
     <div class="page-wrapper default-version">
         @include('admin_panel.include.sidebar_include')
@@ -12,34 +60,54 @@
                     <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
 
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-primary">
-                            <h4 class="text-white">Sale Record for Truck #{{ $truck->truck_number }}</h4>
+                    <div class="card shadow-lg border-0 rounded-3">
+                        <div class="card-header-premium d-flex justify-content-between align-items-center">
+                            <h4 class="fw-bold mb-0 text-white"><i class="fas fa-clipboard-list me-2"></i> Sale Record</h4>
+                            <span class="badge bg-success fs-6 px-3 py-2 shadow-sm" style="border: 1px solid #fff;">
+                                <i class="fas fa-truck me-1"></i> Truck: {{ $truck->truck_number }}
+                            </span>
                         </div>
 
-                        <div class="card-body">
+                        <div class="card-body p-4">
                             @foreach($lots as $lot)
-                            <div class="card my-3 border">
-                                <div class="card-header bg-light">
-                                    <h5>Lot: {{ $lot->category }} - {{ $lot->variety }}</h5>
+                            <div class="card mb-4 border-0 shadow-sm" style="border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0 !important;">
+                                <div class="card-header-lot d-flex justify-content-between align-items-center">
+                                    <h5 class="fw-bold mb-0 text-primary"><i class="fas fa-box-open me-2"></i> {{ $lot->category }} <span class="text-muted fs-6">({{ $lot->variety }})</span></h5>
                                 </div>
-                                <div class="card-body">
-                                    <p><strong>Total Quantity:</strong> {{ $lot->total_units }}</p>
-                                    <p><strong>Total Sold:</strong> {{ $lot->sold_quantity }}</p>
-                                    <p><strong>Available:</strong> {{ $lot->available_quantity }}</p>
+                                <div class="card-body p-4">
                                     @php
                                     $totalAmount = $lot->sales->sum(function($sale) {
-                                    return ($sale->weight ? $sale->weight : $sale->quantity) * $sale->price;
+                                        return ($sale->weight ? $sale->weight : $sale->quantity) * $sale->price;
                                     });
-
                                     $averageSale = $lot->sold_quantity > 0 ? $totalAmount / $lot->sold_quantity : 0;
                                     @endphp
 
-                                    <p><strong>Total Sale Amount:</strong> Rs. {{ number_format($totalAmount, 2) }}</p>
-                                    <p><strong>Average Sale:</strong> Rs. {{ number_format($averageSale, 2) }}</p>
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered">
-                                            <thead class="table-secondary">
+                                    <div class="d-flex flex-wrap gap-3 mb-4">
+                                        <div class="stat-box">
+                                            <div class="title">Total Quantity</div>
+                                            <div class="value">{{ $lot->total_units }}</div>
+                                        </div>
+                                        <div class="stat-box primary">
+                                            <div class="title">Sold Quantity</div>
+                                            <div class="value">{{ $lot->sold_quantity }}</div>
+                                        </div>
+                                        <div class="stat-box danger">
+                                            <div class="title">Available</div>
+                                            <div class="value">{{ $lot->available_quantity }}</div>
+                                        </div>
+                                        <div class="stat-box success">
+                                            <div class="title">Total Sale Amount</div>
+                                            <div class="value">Rs. {{ number_format($totalAmount, 2) }}</div>
+                                        </div>
+                                        <div class="stat-box">
+                                            <div class="title">Avg. Sale / Unit</div>
+                                            <div class="value">Rs. {{ number_format($averageSale, 2) }}</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive rounded border">
+                                        <table class="table table-hover table-custom mb-0">
+                                            <thead>
                                                 <tr>
                                                     <th>Customer Name</th>
                                                     <th>Sold Units</th>
@@ -54,11 +122,11 @@
                                             <tbody>
                                                 @foreach($lot->sales as $sale)
                                                 <tr>
-                                                    <td>{{ $sale->customer_name }}</td>
+                                                    <td class="fw-bold">{{ $sale->customer_name }}</td>
                                                     <td>{{ $sale->quantity }}</td>
-                                                    <td>{{ $sale->weight ?? '-' }}</td> <!-- Add this -->
+                                                    <td>{{ $sale->weight ?? '-' }}</td>
                                                     <td>{{ number_format($sale->price, 2) }}</td>
-                                                    <td>
+                                                    <td class="text-success fw-bold">
                                                         {{ number_format(($sale->weight ?? $sale->quantity) * $sale->price, 2) }}
                                                     </td>
                                                     <td>{{ \Carbon\Carbon::parse($sale->sale_date)->format('d M, Y') }}</td>
@@ -68,19 +136,20 @@
                                                         </span>
                                                     </td>
                                                     <td>
-                                                        <!-- Edit Button -->
-                                                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ $sale->id }}">
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            class="btn btn-danger delete-sale"
-                                                            data-lot-id="{{ $sale->lot_id }}"
-                                                            data-sale-id="{{ $sale->id }}"
-                                                            data-customer-id="{{ $sale->customer_id }}">
-                                                            Delete
-                                                        </button>
-
+                                                        <div class="btn-group">
+                                                            <!-- Edit Button -->
+                                                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ $sale->id }}" title="Edit Sale">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-sm btn-outline-danger delete-sale"
+                                                                data-lot-id="{{ $sale->lot_id }}"
+                                                                data-sale-id="{{ $sale->id }}"
+                                                                data-customer-id="{{ $sale->customer_id }}" title="Delete Sale">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
 
@@ -90,12 +159,12 @@
                                                         <form method="POST" action="{{ route('update.lot.sale') }}">
                                                             @csrf
                                                             <input type="hidden" name="sale_id" value="{{ $sale->id }}">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
+                                                                <div class="modal-content border-0 shadow-lg">
+                                                                <div class="modal-header" style="background: linear-gradient(90deg, #0f172a 0%, #1e293b 100%); color: white;">
                                                                     <h5 class="modal-title" id="editModalLabel{{ $sale->id }}">
-                                                                        Edit Sale - {{ $sale->customer_name }}
+                                                                        <i class="fas fa-edit me-2"></i> Edit Sale - {{ $sale->customer_name }}
                                                                     </h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <!-- Current sold units (read‑only) -->
