@@ -66,38 +66,4 @@ class BackupController extends Controller
         return $sql;
     }
 
-    public static function sendEmailBackup()
-    {
-        try {
-            $targetEmail = 'janmuhammad1917@gmail.com';
-            $filename = "daily-backup-" . \date('Y-m-d') . ".sql";
-            
-            // Create a temporary instance to call non-static method or just use logic
-            $controller = new self();
-            $sqlContent = $controller->generateSqlDump();
-            
-            $storagePath = \storage_path('app/public/backups/');
-            if (!\file_exists($storagePath)) { \mkdir($storagePath, 0777, true); }
-            
-            $filePath = $storagePath . $filename;
-            \file_put_contents($filePath, $sqlContent);
-
-            if (\file_exists($filePath)) {
-                \Illuminate\Support\Facades\Mail::to($targetEmail)->send(new \App\Mail\BackupMail($filePath, $filename));
-                \unlink($filePath);
-                return true;
-            }
-        } catch (\Exception $e) {
-            \Log::error('Backup Email Error: ' . $e->getMessage());
-        }
-        return false;
-    }
-
-    public function triggerEmailBackup()
-    {
-        if ($this->sendEmailBackup()) {
-            return \back()->with('success', 'Backup sent to janmuhammad1917@gmail.com successfully!');
-        }
-        return \back()->with('error', 'Backup failed to send email. Check logs.');
-    }
 }

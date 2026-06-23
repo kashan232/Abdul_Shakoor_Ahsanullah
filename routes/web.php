@@ -278,6 +278,5 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/system-backup', [App\Http\Controllers\BackupController::class, 'index'])->name('backup.index');
 Route::get('/download-sql', [App\Http\Controllers\BackupController::class, 'downloadSql'])->name('backup.download.sql');
-Route::post('/trigger-email-backup', [App\Http\Controllers\BackupController::class, 'triggerEmailBackup'])->name('backup.trigger.email');
 
 require __DIR__.'/auth.php';

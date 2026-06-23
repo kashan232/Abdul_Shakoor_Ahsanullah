@@ -584,15 +584,14 @@ public function store_multi_lot(Request $request)
 
 
 
-    public function cash_sale()
+    public function cash_sale(Request $request)
     {
         if (Auth::id()) {
             $userId = Auth::id();
 
-            // Fetch Cash Sales
-            $cash_sales = DB::table('lot_sales')
+            $query = DB::table('lot_sales')
                 ->join('lot_entries', 'lot_sales.lot_id', '=', 'lot_entries.id')
-                ->where('lot_sales.customer_type', 'cash') // Sirf cash type ki sales
+                ->where('lot_sales.customer_type', 'cash')
                 ->select(
                     'lot_entries.category',
                     'lot_entries.variety',
@@ -600,8 +599,13 @@ public function store_multi_lot(Request $request)
                     'lot_sales.price',
                     'lot_sales.total',
                     'lot_sales.sale_date'
-                )
-                ->get();
+                );
+
+            if ($request->filled('start_date') && $request->filled('end_date')) {
+                $query->whereBetween('lot_sales.sale_date', [$request->start_date, $request->end_date]);
+            }
+
+            $cash_sales = $query->orderBy('lot_sales.sale_date', 'desc')->get();
 
             return view('admin_panel.lot_sale.cash_sale', compact('cash_sales'));
         } else {
