@@ -14,6 +14,79 @@
         margin: 10px 0;
     }
 
+    /* New Header Styles */
+    .print-header-content {
+        background: linear-gradient(to bottom, #dbeafe, #bfdbfe);
+        border: 1px solid #93c5fd;
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        color: #1e3a8a;
+        font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Nafees Web Naskh', Tahoma, sans-serif;
+        text-align: center;
+        direction: rtl; /* Right to left for Urdu */
+    }
+
+    .ph-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 1.4;
+    }
+
+    .ph-top-left, .ph-top-right {
+        text-align: center;
+    }
+    
+    .ph-top-center {
+        font-family: 'Amiri', 'Traditional Arabic', serif; /* Arabic font */
+        font-size: 20px;
+        color: #1e40af;
+        line-height: 1.6;
+    }
+
+    .ph-title {
+        font-size: 42px;
+        font-weight: 900;
+        color: #431407; /* Dark brown */
+        margin: 15px 0 10px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    .ph-subtitle {
+        display: flex;
+        justify-content: space-around;
+        font-size: 18px;
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 15px;
+    }
+
+    .ph-address {
+        background: #701a75; /* Purple background */
+        color: white;
+        display: inline-block;
+        padding: 6px 25px;
+        border-radius: 25px;
+        font-size: 17px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+    }
+
+    .en-text {
+        font-family: 'Arial', sans-serif;
+        direction: ltr;
+        display: inline-block;
+        color: #1f2937;
+    }
+    
+    .name-text {
+        color: #ea580c; /* Orange color for names */
+        font-size: 18px;
+    }
+
     .top-header {
         background-color: #d8d8d8;
         padding: 10px 20px;
@@ -59,36 +132,116 @@
         font-size: 14px;
     }
 
-    .info-table,
-    .main-table,
+    .info-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 15px;
+        margin-bottom: 25px;
+        border: 2px solid #2E3094;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .info-table td {
+        padding: 12px 15px;
+        font-size: 17px;
+        border-left: 1px solid #ddd; /* left border because RTL */
+    }
+    .info-table td:last-child {
+        border-left: none;
+    }
+    .info-table td strong {
+        color: #2E3094;
+        margin-left: 8px;
+    }
+
+    .main-table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 25px;
+        border: 1px solid #ddd;
+    }
+
+    .main-table thead th {
+        background-color: #2E3094 !important;
+        color: #ffffff !important;
+        padding: 12px 10px;
+        font-size: 15px;
+        border: 1px solid #2E3094;
+        text-align: center;
+    }
+
+    .main-table tbody tr:nth-child(even) {
+        background-color: #f8fafc;
+    }
+
+    .main-table tbody td {
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    .lot-total-row td {
+        background-color: #e2e8f0;
+        font-weight: bold;
+        color: #1e293b;
+        font-size: 16px;
+        padding: 12px 10px;
+        border-top: 2px solid #2E3094;
+        text-align: center;
+    }
+
     .expense-table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 10px;
+        border: 1px solid #dee2e6;
     }
 
-    .info-table td,
-    .main-table th,
-    .main-table td,
-    .expense-table th,
-    .expense-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
+    .expense-table th {
+        background-color: #f1f5f9;
+        color: #334155;
+        padding: 12px 10px;
+        font-size: 15px;
+        border-bottom: 2px solid #cbd5e1;
         text-align: center;
     }
 
-    .main-table thead th,
-    .expense-table thead th {
-        background-color: #e8e8e8;
-        color: #000;
+    .expense-table td {
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        font-size: 15px;
+        text-align: left;
+    }
+
+    .expense-table td strong {
+        float: right;
+    }
+
+    .expense-total td {
+        background-color: #fee2e2 !important;
+        color: #b91c1c !important;
+        font-size: 16px;
+        border-top: 2px solid #fca5a5;
+    }
+
+    .net-row td {
+        background-color: #dcfce7 !important;
+        color: #15803d !important;
+        font-size: 18px;
+        border-top: 2px solid #86efac;
     }
 
     .section-title {
-        margin-top: 20px;
-        margin-bottom: 10px;
-        font-weight: bold;
+        background: linear-gradient(to left, #2E3094, #4338ca);
+        color: white !important;
+        padding: 8px 20px;
+        border-radius: 5px;
+        display: inline-block;
+        margin-bottom: 15px;
         font-size: 18px;
-        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .row {
@@ -252,16 +405,16 @@
 
                             <div class="table-responsive">
                                 <table class="main-table table table-bordered table-striped">
-                                    <thead class="table-light" style="background:#e8e8e8!important;">
+                                    <thead class="table-light">
                                         <tr>
-                                            <th data-ur="نگ" style="color:#000;">نگ</th>
-                                            <th data-ur="وزن" style="color:#000;">وزن</th> {{-- نیا وزن کا کالم --}}
-                                            <th data-ur="یونٹ" style="color:#000;">یونٹ</th>
-                                            <th data-ur="جنس" style="color:#000;">جنس</th>
-                                            <th data-ur="اقسام" style="color:#000;">اقسام</th>
-                                            <th data-ur="سائز" style="color:#000;">سائز</th>
-                                            <th data-ur="ریٹ" style="color:#000;">ریٹ</th>
-                                            <th data-ur="ٹوٹل" style="color:#000;">ٹوٹل</th>
+                                            <th data-ur="نگ">نگ</th>
+                                            <th data-ur="وزن">وزن</th> {{-- نیا وزن کا کالم --}}
+                                            <th data-ur="یونٹ">یونٹ</th>
+                                            <th data-ur="جنس">جنس</th>
+                                            <th data-ur="اقسام">اقسام</th>
+                                            <th data-ur="سائز">سائز</th>
+                                            <th data-ur="ریٹ">ریٹ</th>
+                                            <th data-ur="ٹوٹل">ٹوٹل</th>
                                         </tr>
                                     </thead>
 

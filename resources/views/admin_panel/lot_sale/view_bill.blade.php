@@ -2,13 +2,21 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <style>
     @media print {
-        body.color-print .header-bar-space {
-            height: 100px;
-            /* Reserve space for header bar */
+        body.color-print .print-header-content {
+            display: block !important;
+        }
+
+        body.blank-print .print-header-content {
+            display: none !important;
         }
 
         body.blank-print .header-bar-space {
-            display: none;
+            display: block !important;
+            height: 180px; /* Space for pre-printed header */
+        }
+
+        body.color-print .header-bar-space {
+            display: none !important;
         }
 
         .no-print {
@@ -23,6 +31,79 @@
         background: #fff;
         padding: 15px;
         border-bottom: 1px solid #ddd;
+    }
+
+    /* Screen display settings for new header */
+    .print-header-content {
+        background: linear-gradient(to bottom, #dbeafe, #bfdbfe);
+        border: 1px solid #93c5fd;
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        color: #1e3a8a;
+        font-family: 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', 'Nafees Web Naskh', Tahoma, sans-serif;
+        text-align: center;
+        direction: rtl; /* Right to left for Urdu */
+    }
+
+    .ph-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 1.4;
+    }
+
+    .ph-top-left, .ph-top-right {
+        text-align: center;
+    }
+    
+    .ph-top-center {
+        font-family: 'Amiri', 'Traditional Arabic', serif; /* Arabic font */
+        font-size: 20px;
+        color: #1e40af;
+        line-height: 1.6;
+    }
+
+    .ph-title {
+        font-size: 42px;
+        font-weight: 900;
+        color: #431407; /* Dark brown */
+        margin: 15px 0 10px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    .ph-subtitle {
+        display: flex;
+        justify-content: space-around;
+        font-size: 18px;
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 15px;
+    }
+
+    .ph-address {
+        background: #701a75; /* Purple background */
+        color: white;
+        display: inline-block;
+        padding: 6px 25px;
+        border-radius: 25px;
+        font-size: 17px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+    }
+
+    .en-text {
+        font-family: 'Arial', sans-serif;
+        direction: ltr;
+        display: inline-block;
+        color: #1f2937;
+    }
+    
+    .name-text {
+        color: #ea580c; /* Orange color for names */
+        font-size: 18px;
     }
 </style>
 
@@ -39,11 +120,47 @@
                     <button onclick="printDocument('color')" class="btn btn-primary">Color Print</button>
                 </div>
 
-                <!-- Top header space for color print -->
-                <div class="header-bar-space mb-3"></div>
+                <!-- Header for color print -->
+                <div class="print-header-content">
+                    <div class="ph-top">
+                        <div class="ph-top-right">
+                            <div style="font-family: Arial, sans-serif; font-weight: 900; direction: ltr;">
+                                <span style="color: #ef4444; font-size: 24px;">A.U</span>
+                                <span style="color: #4b5563; font-size: 14px;">& BROTHERS</span>
+                            </div>
+                            <div class="name-text mt-1">احسان اللہ</div>
+                            <div class="en-text">0300-9378192</div><br>
+                            <div class="en-text">0313-9378192</div>
+                        </div>
+                        <div class="ph-top-center">
+                            حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ<br>
+                            نِعْمَ الْمَوْلَى وَنِعْمَ النَّصِيرُ
+                        </div>
+                        <div class="ph-top-left">
+                            <div class="name-text">امان اللہ</div>
+                            <div class="en-text">0321-3045286</div>
+                            <div class="name-text mt-1">عطاء اللہ</div>
+                            <div class="en-text">0308-3002916</div>
+                        </div>
+                    </div>
+                    
+                    <div class="ph-title">ماما عبدالشکور احسان اللہ اینڈ کو</div>
+                    
+                    <div class="ph-subtitle">
+                        <div>آلو، پیاز، لہسن کمیشن ایجنٹس</div>
+                        <div>پروپرائٹر: امان اللہ، عطاء اللہ</div>
+                    </div>
+                    
+                    <div class="ph-address">
+                        دکان نمبر 227-226-200 نیو سبزی مارکیٹ ہالانا کہ حیدرآباد
+                    </div>
+                </div>
+
+                <!-- Blank print space -->
+                <div class="header-bar-space mb-3" style="display: none;"></div>
 
                 <div class="d-flex mb-4 flex-wrap gap-3 justify-content-between align-items-center">
-                    <h4 class="fw-bold text-primary mb-4">Vendor Bill Details</h4>
+                    <h4 class="fw-bold text-primary mb-4 no-print">Vendor Bill Details</h4>
                 </div>
 
                 <div class="card shadow-lg p-4">
