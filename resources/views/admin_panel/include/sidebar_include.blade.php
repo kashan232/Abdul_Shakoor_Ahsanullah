@@ -285,17 +285,58 @@
                         <span class="menu-title">Daily Recoveries</span>
                     </a><i class=""></i>
                 </li>
-                <li class="sidebar-menu-item">
-                    <a href="{{ route('customer-payments') }}" class="nav-link">
-                        <i class="menu-icon fas fa-calendar-alt"></i>
-                        <span class="menu-title">Customer Payments</span>
-                    </a><i class=""></i>
+                <li class="sidebar-menu-item sidebar-dropdown">
+                    <a href="javascript:void(0)">
+                        <i class="menu-icon las la-credit-card"></i>
+                        <span class="menu-title"> Payments </span>
+                    </a>
+                    <div class="sidebar-submenu">
+                        <ul>
+                            <li class="sidebar-menu-item">
+                                <a href="{{ route('customer-payments') }}" class="nav-link">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title">Customer Payments</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-menu-item">
+                                <a href="{{ route('Vendor-payments') }}" class="nav-link">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title">Vendor Payments</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
-                <li class="sidebar-menu-item">
-                    <a href="{{ route('Vendor-payments') }}" class="nav-link">
-                        <i class="menu-icon fas fa-calendar-alt"></i>
-                        <span class="menu-title">Vendors Payments</span>
-                    </a><i class=""></i>
+
+                <li class="sidebar-menu-item sidebar-dropdown">
+                    <a  href="javascript:void(0)">
+                        <i class="menu-icon fas fa-money-bill-wave"></i>
+                        <span class="menu-title"> Expense</span>
+                    </a>
+                    <div class="sidebar-submenu ">
+                        <ul>
+                            <li class="sidebar-menu-item ">
+                                <a class="nav-link" href="{{ route('expense-categories') }}">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title"> Expense Categories </span>
+                                </a>
+                            </li>
+
+                            <li class="sidebar-menu-item ">
+                                <a class="nav-link" href="{{ route('expenses') }}">
+                                    <i class="menu-icon las la-dot-circle"></i>
+                                    <span class="menu-title"> Expense Records </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="sidebar-menu-item ">
+                    <a href="{{ route('cash-book') }}">
+                        <i class="menu-icon las la-book"></i>
+                        <span class="menu-title"> Cash Book </span>
+                    </a>
                 </li>
 
                 <li class="sidebar-menu-item sidebar-dropdown">
@@ -319,12 +360,6 @@
                                 </a>
                             </li>
 
-                            <li class="sidebar-menu-item ">
-    <a href="{{ route('customer.receivable.report') }}">
-        <i class="menu-icon las la-dot-circle"></i>
-        <span class="menu-title"> Customer Monthly Receivable Report </span>
-    </a>
-</li>
 
 <li class="sidebar-menu-item ">
     <a href="{{ route('customers.current.balance.report') }}">

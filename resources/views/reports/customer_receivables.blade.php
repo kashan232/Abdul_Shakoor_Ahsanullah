@@ -64,13 +64,13 @@
                         </div>
                     </div>
 
-                    <div class="report-container">
-                        <div class="report-header text-center mb-3 fw-bold fs-5">
+                    <div class="card-body p-0">
+                        <div class="report-header text-center mb-4 fw-bold fs-5">
                             Customer Receivable Report as of {{ \Carbon\Carbon::parse(request('to_date') ?? now())->format('d M, Y') }}
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="receivableTable">
-                                <thead class="table-dark text-center">
+                        <div class="table-responsive--sm table-responsive">
+                            <table class="display table table--light" id="example" style="width:100%">
+                                <thead class="table-dark">
                                     <tr>
                                         <th>Customer Name</th>
                                         <th>Opening Balance</th>
@@ -203,13 +203,7 @@
 
     <style>
         .report-container {
-            max-width: 100% !important;
-            margin: 0 auto;
-            background: #fff;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            width: 100%;
         }
         .report-header {
             border-bottom: 2px solid #343a40;

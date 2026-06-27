@@ -91,7 +91,7 @@
     @include('admin_panel.include.footer_include')
     <script>
         function fetchSupplierData(supplierId) {
-            let url = "{{ route('get-Vendor-balance', ['id' => 'VENDORID']) }}".replace('VENDORID', vendorId);
+            let url = "{{ route('get-Vendor-balance', ['id' => 'VENDORID']) }}".replace('VENDORID', supplierId);
 
             fetch(url)
                 .then(response => response.json())

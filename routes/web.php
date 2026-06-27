@@ -22,6 +22,9 @@ use App\Http\Controllers\CustomerReportController;
 use App\Http\Controllers\TruckEntryController;
 use App\Http\Controllers\UnitInController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\CashBookController;
 
 use Illuminate\Support\Facades\Route;
 /*use Illuminate\Support\Facades\Artisan;*/
@@ -273,6 +276,18 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Expense Category
+Route::get('/expense-categories', [ExpenseCategoryController::class, 'index'])->middleware(['auth','admin'])->name('expense-categories');
+Route::post('/store-expense-category', [ExpenseCategoryController::class, 'store'])->name('store-expense-category');
+Route::post('/update-expense-category', [ExpenseCategoryController::class, 'update'])->name('update-expense-category');
+
+// Expense
+Route::get('/expenses', [ExpenseController::class, 'index'])->middleware(['auth','admin'])->name('expenses');
+Route::post('/store-expense', [ExpenseController::class, 'store'])->name('store-expense');
+Route::post('/update-expense', [ExpenseController::class, 'update'])->name('update-expense');
+
+Route::get('/cash-book', [CashBookController::class, 'index'])->middleware(['auth','admin'])->name('cash-book');
 
 
 
