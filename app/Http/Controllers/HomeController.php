@@ -109,8 +109,9 @@ class HomeController extends Controller
                     $totalOpeningBalance += (float)$c->opening_balance;
                 }
 
-                for ($i = 5; $i >= 0; $i--) {
-                    $monthToken = now()->subMonths($i);
+                $currentYear = now()->year;
+                for ($i = 1; $i <= 12; $i++) {
+                    $monthToken = \Carbon\Carbon::create($currentYear, $i, 1);
                     $monthTokenDate = $monthToken->endOfMonth()->format('Y-m-d');
                     $monthKey = $monthToken->format('Y-m');
                     $monthLabels[] = $monthToken->format('M');
