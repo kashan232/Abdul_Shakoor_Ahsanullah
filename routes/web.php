@@ -269,6 +269,8 @@ Route::post('/multi-lots/store', [LotSaleController::class, 'store_multi_lot'])-
 Route::get('/Market-credit-report', [ReportController::class, 'Marketcreditreport'])->name('Market-credit-report');
 Route::post('/get-customer-ledger-summary', [ReportController::class, 'getCustomerLedgerSummary'])->name('get.customer.ledger.summary');
 Route::get('/reports/receivable', [CustomerReportController::class, 'receivableReport']);
+Route::get('/reports/bill-expenses', [App\Http\Controllers\BillExpenseReportController::class, 'index'])->name('reports.bill_expenses');
+Route::get('/reports/expenses', [App\Http\Controllers\ExpenseReportController::class, 'index'])->name('reports.expenses');
 Route::get('/customerReceivableReport', [CustomerReportController::class, 'customerReceivableReport'])->name('customer.receivable.report');
 Route::get('/customers-current-balance-report', [CustomerReportController::class, 'currentBalanceReport'])->name('customers.current.balance.report');
 Route::middleware('auth')->group(function () {

@@ -340,6 +340,11 @@
 
     /* Print Style */
     @media print {
+        @page {
+            size: auto;
+            margin: 5mm; /* very small margin */
+        }
+        
         .no-print {
             display: none !important;
         }
@@ -347,6 +352,8 @@
         body {
             margin: 0;
             padding: 0;
+            zoom: 0.85; /* Shrink to fit on one page */
+            background-color: white;
         }
 
         .card {
@@ -354,6 +361,16 @@
             margin: 0;
             padding: 0;
             border: none;
+        }
+
+        .main-table, .expense-table {
+            margin-bottom: 10px !important;
+        }
+
+        #urduSection {
+            page-break-inside: avoid;
+            page-break-before: auto;
+            page-break-after: auto;
         }
     }
 </style>
@@ -369,6 +386,7 @@
                         <div class="no-print" style="text-align: center; margin: 20px 0;">
                             <button class="back-button" onclick="history.back()">واپس جائیں</button>
                             <button class="print-button" onclick="window.print()">پرنٹ کریں</button>
+                            <button class="print-button" style="background-color: #007bff;" onclick="downloadImage()">ڈاؤن لوڈ تصویر</button>
                         </div>
 
                         <div class="card-body p-0">
@@ -384,7 +402,7 @@
                             @endphp
 
                             <div class="top-header" style="padding: 0; margin-bottom: 0px;">
-                                <img src="{{ asset('bill_header.png') }}" alt="Header Image" style="width: 100%; height: auto;">
+                                <img src="{{ asset('bill_header.jpeg') }}" alt="Header Image" style="width: 100%; height: auto;">
                             </div>
 
 
@@ -539,5 +557,26 @@
                 </div>
             </div>
         </div>
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        function downloadImage() {
+            var element = document.getElementById("urduSection");
+            var buttons = document.querySelector(".no-print");
+            // Hide buttons temporarily so they don't appear in the image
+            buttons.style.display = "none";
+            
+            html2canvas(element, { scale: 2 }).then(function(canvas) {
+                // Restore buttons
+                buttons.style.display = "block";
+                
+                var link = document.createElement("a");
+                document.body.appendChild(link);
+                link.download = "Bill_{{ $bill->trucknumber }}.jpg";
+                link.href = canvas.toDataURL("image/jpeg", 0.9);
+                link.target = '_blank';
+                link.click();
+                link.remove();
+            });
+        }
+    </script>
 </body>

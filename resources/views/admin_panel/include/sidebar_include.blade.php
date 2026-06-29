@@ -368,6 +368,20 @@
     </a>
 </li>
 
+<li class="sidebar-menu-item ">
+    <a href="{{ route('reports.bill_expenses') }}">
+        <i class="menu-icon las la-dot-circle"></i>
+        <span class="menu-title"> Bill Expenses Report </span>
+    </a>
+</li>
+
+<li class="sidebar-menu-item ">
+    <a href="{{ route('reports.expenses') }}">
+        <i class="menu-icon las la-dot-circle"></i>
+        <span class="menu-title"> Office Expenses Report </span>
+    </a>
+</li>
+
 
 
                         </ul>
