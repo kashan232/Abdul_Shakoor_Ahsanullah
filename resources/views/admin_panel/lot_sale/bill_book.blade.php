@@ -560,19 +560,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         function downloadImage() {
+            window.scrollTo(0, 0);
             var element = document.getElementById("urduSection");
             var buttons = document.querySelector(".no-print");
-            // Hide buttons temporarily so they don't appear in the image
+            
+            // Hide buttons
             buttons.style.display = "none";
             
-            html2canvas(element, { scale: 2 }).then(function(canvas) {
-                // Restore buttons
+            // Save original styles
+            var originalBackground = element.style.background;
+            element.style.background = "#ffffff";
+            element.style.padding = "10px";
+            
+            html2canvas(element, { 
+                scale: 2, 
+                backgroundColor: '#ffffff',
+                useCORS: true,
+                logging: false,
+                width: element.scrollWidth,
+                height: element.scrollHeight,
+                windowWidth: document.documentElement.offsetWidth,
+                windowHeight: document.documentElement.offsetHeight
+            }).then(function(canvas) {
+                // Restore buttons and styles
                 buttons.style.display = "block";
+                element.style.background = originalBackground;
+                element.style.padding = "0";
                 
                 var link = document.createElement("a");
                 document.body.appendChild(link);
                 link.download = "Bill_{{ $bill->trucknumber }}.jpg";
-                link.href = canvas.toDataURL("image/jpeg", 0.9);
+                link.href = canvas.toDataURL("image/jpeg", 1.0);
                 link.target = '_blank';
                 link.click();
                 link.remove();
