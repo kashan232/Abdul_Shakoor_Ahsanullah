@@ -71,9 +71,6 @@
                                             @endif
                                         </tbody>
                                     </table>
-                                    <div class="d-flex justify-content-center mt-3">
-                                        {{ $Recoveries->links('pagination::bootstrap-5') }}
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -121,7 +118,7 @@
     <script>
         $(document).ready(function() {
             // Edit Button Click
-            $('.edit-btn').click(function() {
+            $(document).on('click', '.edit-btn', function() {
                 $('#edit_recovery_id').val($(this).data('id'));
                 $('#edit_customer_id').val($(this).data('customer-id'));
                 $('#edit_amount').val($(this).data('amount'));
@@ -150,7 +147,7 @@
             });
 
             // Delete Button Click
-            $('.delete-btn').click(function() {
+            $(document).on('click', '.delete-btn', function() {
                 let recovery_id = $(this).data('id');
                 let customer_id = $(this).data('customer-id');
                 let amount = $(this).data('amount');

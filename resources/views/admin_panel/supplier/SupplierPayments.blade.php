@@ -110,7 +110,7 @@
     <script>
         $(document).ready(function() {
             // Edit Button Click
-            $('.edit-btn').click(function() {
+            $(document).on('click', '.edit-btn', function() {
                 $('#edit_payment_id').val($(this).data('id'));
                 $('#edit_supplier_id').val($(this).data('supplier-id'));
                 $('#edit_amount').val($(this).data('amount'));
@@ -139,7 +139,7 @@
             });
 
             // Delete Button Click
-            $('.delete-btn').click(function() {
+            $(document).on('click', '.delete-btn', function() {
                 let payment_id = $(this).data('id');
                 let supplier_id = $(this).data('supplier-id');
                 let amount = $(this).data('amount');

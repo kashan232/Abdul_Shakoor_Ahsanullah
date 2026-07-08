@@ -221,8 +221,8 @@ class CustomerController extends Controller
             $userId = Auth::id();
             $Recoveries = CustomerRecovery::where('admin_or_user_id', $userId)
                 ->with('customer')
-                ->orderBy('id', 'desc') // Optional: show latest first
-                ->paginate(100); // 👈 Paginate with 100 per page
+                ->orderBy('id', 'desc')
+                ->get();
             return view('admin_panel.customers.customers_recoveries', compact('Recoveries'));
         } else {
             return redirect()->back();
