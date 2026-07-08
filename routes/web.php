@@ -124,6 +124,8 @@ Route::post('/update-supplier', [SupplierController::class, 'update_supplier'])-
 Route::get('/supplier-ledger', [SupplierController::class, 'supplier_ledger'])->middleware(['auth', 'admin'])->name('supplier-ledger');
 Route::post('/supplier-payment-store', [SupplierController::class, 'supplier_payment_store'])->name('supplier-payment-store');
 Route::get('/supplier-payment', [SupplierController::class, 'supplier_payment'])->name('supplier-payment');
+Route::post('/update-supplier-payment', [SupplierController::class, 'updateSupplierPayment'])->name('update.supplier.payment');
+Route::post('/delete-supplier-payment', [SupplierController::class, 'deleteSupplierPayment'])->name('delete.supplier.payment');
 Route::get('/Supplier-balance', [SupplierController::class, 'Supplier_balance'])->middleware(['auth', 'admin'])->name('Supplier-balance');
 Route::get('/Supplier-balance-ledger/{id}', [SupplierController::class, 'Supplier_balance_ledger'])->name('Supplier-balance-ledger');
 Route::post('/toggle-supplier-status', [SupplierController::class, 'toggleStatus'])->name('toggle-supplier-status');
@@ -239,6 +241,7 @@ Route::get('/Customer-balance', [CustomerController::class, 'Customer_balance'])
 Route::get('/customer-ledger/{id}', [CustomerController::class, 'fetchLedger'])->name('customer.ledger');
 Route::get('/lot/sale/{id}', [CustomerController::class, 'getLotDetails'])->name('lot.sale.details');
 Route::post('/delete-recovery', [CustomerController::class, 'deleteRecovery'])->name('delete.recovery');
+Route::post('/update-recovery', [CustomerController::class, 'updateCustomerRecovery'])->name('update.recovery');
 
 
 Route::get('/customer-payments', [PaymentController::class, 'customer_payments'])->middleware(['auth', 'admin'])->name('customer-payments');

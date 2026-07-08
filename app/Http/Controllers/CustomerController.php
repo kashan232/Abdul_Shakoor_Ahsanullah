@@ -322,14 +322,60 @@ class CustomerController extends Controller
         // Permanently delete the recovery
         DB::table('customer_recoveries')->where('id', $request->recovery_id)->delete();
 
-        // Update closing_balance in customer_ledgers by adding back the amount
+        // Update closing_balance and previous_balance in customer_ledgers by adding back the amount
         DB::table('customer_ledgers')
             ->where('customer_id', $request->customer_id)
             ->update([
                 'closing_balance' => DB::raw("closing_balance + {$request->amount}"),
+                'previous_balance' => DB::raw("previous_balance + {$request->amount}"),
                 'updated_at' => now()
             ]);
 
         return response()->json(['message' => 'Recovery permanently deleted and balance updated.']);
+    }
+
+    public function updateCustomerRecovery(Request $request)
+    {
+        $request->validate([
+            'recovery_id' => 'required|integer',
+            'customer_id' => 'required|integer',
+            'amount_paid' => 'required|numeric',
+            'date' => 'required|date',
+        ]);
+
+        $recovery = DB::table('customer_recoveries')->where('id', $request->recovery_id)->first();
+        if (!$recovery) {
+            return response()->json(['message' => 'Recovery not found.'], 404);
+        }
+
+        $old_amount = $recovery->amount_paid;
+        $new_amount = $request->amount_paid;
+        $difference = $new_amount - $old_amount;
+
+        DB::beginTransaction();
+        try {
+            DB::table('customer_ledgers')
+                ->where('customer_id', $request->customer_id)
+                ->update([
+                    'closing_balance' => DB::raw("closing_balance - {$difference}"),
+                    'previous_balance' => DB::raw("previous_balance - {$difference}"),
+                    'updated_at' => now()
+                ]);
+
+            DB::table('customer_recoveries')
+                ->where('id', $request->recovery_id)
+                ->update([
+                    'amount_paid' => $new_amount,
+                    'date' => $request->date,
+                    'description' => $request->description,
+                    'updated_at' => now()
+                ]);
+            
+            DB::commit();
+            return response()->json(['message' => 'Recovery updated and ledger adjusted successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Failed to update: ' . $e->getMessage()], 500);
+        }
     }
 }

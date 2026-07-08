@@ -271,4 +271,79 @@ class SupplierController extends Controller
             ]);
         }
     }
+
+    public function deleteSupplierPayment(Request $request)
+    {
+        $request->validate([
+            'payment_id' => 'required|integer',
+            'supplier_id' => 'required|integer',
+            'amount' => 'required|numeric'
+        ]);
+
+        $payment = SupplierPayments::find($request->payment_id);
+        if (!$payment) {
+            return response()->json(['message' => 'Payment not found.'], 404);
+        }
+
+        DB::beginTransaction();
+        try {
+            $payment->delete();
+
+            // Reverse the payment from ledger (add the amount back to balance)
+            DB::table('supplier_ledgers')
+                ->where('supplier_id', $request->supplier_id)
+                ->update([
+                    'closing_balance' => DB::raw("closing_balance + {$request->amount}"),
+                    'updated_at' => now()
+                ]);
+
+            DB::commit();
+            return response()->json(['message' => 'Payment permanently deleted and balance updated.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Failed to delete: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function updateSupplierPayment(Request $request)
+    {
+        $request->validate([
+            'payment_id' => 'required|integer',
+            'supplier_id' => 'required|integer',
+            'amount_paid' => 'required|numeric',
+            'payment_date' => 'required|date',
+        ]);
+
+        $payment = SupplierPayments::find($request->payment_id);
+        if (!$payment) {
+            return response()->json(['message' => 'Payment not found.'], 404);
+        }
+
+        $old_amount = $payment->amount_paid;
+        $new_amount = $request->amount_paid;
+        $difference = $new_amount - $old_amount;
+
+        DB::beginTransaction();
+        try {
+            // Update the ledger balance
+            DB::table('supplier_ledgers')
+                ->where('supplier_id', $request->supplier_id)
+                ->update([
+                    'closing_balance' => DB::raw("closing_balance - {$difference}"),
+                    'updated_at' => now()
+                ]);
+
+            // Update the payment record
+            $payment->amount_paid = $new_amount;
+            $payment->payment_date = $request->payment_date;
+            $payment->description = $request->description;
+            $payment->save();
+
+            DB::commit();
+            return response()->json(['message' => 'Payment updated and ledger adjusted successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Failed to update: ' . $e->getMessage()], 500);
+        }
+    }
 }
