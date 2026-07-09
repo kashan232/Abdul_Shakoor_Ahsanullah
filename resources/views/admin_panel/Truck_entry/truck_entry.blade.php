@@ -50,8 +50,13 @@
 
                                 <!-- Vendor (Party) -->
                                 <div class="col-md-4 mt-2">
-                                    <label class="form-label">Vendor (Party)</label>
-                                    <select name="vendor_id" class="select2-basic form-control">
+                                    <label class="form-label d-flex justify-content-between">
+                                        Vendor (Party)
+                                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addVendorModal" style="padding: 0 5px; height: 24px; line-height: 1;">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </label>
+                                    <select name="vendor_id" id="vendor_select" class="select2-basic form-control">
                                         <option value="">Select Vendor</option>
                                         @foreach($vendors as $vendor)
                                         <option value="{{ $vendor->name }}">{{ $vendor->name }}</option>
@@ -140,6 +145,64 @@
         </div>
     </div>
 
+    <!-- Add Vendor Modal -->
+    <div class="modal fade" id="addVendorModal" tabindex="-1" aria-labelledby="addVendorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addVendorModalLabel">Add New Vendor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="addVendorForm">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group mb-3">
+                                    <label>Name</label>
+                                    <input type="text" name="name" class="form-control" autocomplete="off" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group mb-3">
+                                    <label>Urdu Name</label>
+                                    <input type="text" name="urdu_name" class="form-control" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group mb-3">
+                                    <label>Mobile</label>
+                                    <input type="number" name="mobile" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group mb-3">
+                                    <label>City</label>
+                                    <input type="text" name="city" class="form-control" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group mb-3">
+                                    <label>Area</label>
+                                    <input type="text" name="area" class="form-control" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group mb-3">
+                                    <label>Opening Balance</label>
+                                    <input type="number" name="opening_balance" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary w-100">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     @include('admin_panel.include.footer_include')
 
     <style>
@@ -224,9 +287,52 @@
 
         // Remove Row
         document.addEventListener("click", function(e) {
-            if (e.target.classList.contains("remove-row")) {
+            if (e.target.classList.contains("remove-row") || e.target.closest('.remove-row')) {
                 e.target.closest("tr").remove();
             }
+        });
+
+        // Add Vendor AJAX Submit
+        $(document).ready(function() {
+            $('#addVendorForm').submit(function(e) {
+                e.preventDefault();
+                let form = $(this);
+                let submitBtn = form.find('button[type="submit"]');
+                submitBtn.prop('disabled', true).text('Saving...');
+
+                $.ajax({
+                    url: "{{ route('store-supplier') }}",
+                    type: "POST",
+                    data: form.serialize(),
+                    success: function(response) {
+                        submitBtn.prop('disabled', false).text('Submit');
+                        if (response.success) {
+                            // Close modal
+                            $('#addVendorModal').modal('hide');
+                            
+                            // Clear form
+                            form[0].reset();
+                            
+                            // Show success message
+                            Swal.fire('Success', response.message, 'success');
+                            
+                            // Append new vendor to select box and select it
+                            let newOption = new Option(response.supplier.name, response.supplier.name, true, true);
+                            $('#vendor_select').append(newOption).trigger('change');
+                        }
+                    },
+                    error: function(xhr) {
+                        submitBtn.prop('disabled', false).text('Submit');
+                        let errorMsg = 'Something went wrong';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMsg = xhr.responseJSON.message;
+                        } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            errorMsg = Object.values(xhr.responseJSON.errors).map(e => e.join(', ')).join('<br>');
+                        }
+                        Swal.fire('Error', errorMsg, 'error');
+                    }
+                });
+            });
         });
     </script>
 </body>

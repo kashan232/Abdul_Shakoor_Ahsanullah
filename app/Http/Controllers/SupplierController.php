@@ -54,13 +54,25 @@ class SupplierController extends Controller
             SupplierLedger::create([
                 'admin_or_user_id' => $userId,
                 'supplier_id' => $Supplier->id,
-                'opening_balance' => $request->opening_balance, // Pehli dafa opening balance = previous balance
-                'previous_balance' => $request->opening_balance, // Pehli dafa opening balance = previous balance
-                'closing_balance' => $request->opening_balance, // Closing balance bhi initially same hoga
+                'opening_balance' => $request->opening_balance ?? 0, // Pehli dafa opening balance = previous balance
+                'previous_balance' => $request->opening_balance ?? 0, // Pehli dafa opening balance = previous balance
+                'closing_balance' => $request->opening_balance ?? 0, // Closing balance bhi initially same hoga
                 'created_at' => Carbon::now(),
             ]);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Supplier Added Successfully',
+                    'supplier' => $Supplier
+                ]);
+            }
+
             return redirect()->back()->with('success', 'Supplier Added Successfully');
         } else {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
             return redirect()->back();
         }
     }

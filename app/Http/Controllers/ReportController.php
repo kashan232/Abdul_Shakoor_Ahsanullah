@@ -137,18 +137,35 @@ class ReportController extends Controller
             ->where('supplier_id', $VendorId)
             ->select('opening_balance', 'previous_balance', 'closing_balance')
             ->first();
+            
+        $initialOpeningBalance = $ledger->opening_balance ?? 0;
+        
+        // Bills and Payments before start date
+        $previousBills = DB::table('vendor_bills')
+            ->where('vendorId', $supplierName)
+            ->whereDate('created_at', '<', $startDate)
+            ->sum('net_pay');
+            
+        $previousPayments = DB::table('supplier_payments')
+            ->where('supplier_id', $VendorId)
+            ->whereDate('payment_date', '<', $startDate)
+            ->sum('amount_paid');
+            
+        $adjustedOpeningBalance = $initialOpeningBalance + $previousBills - $previousPayments;
 
-        // 3. Recoveries
+        // 3. Recoveries (Payments to Vendor)
         $recoveries = DB::table('supplier_payments')
             ->where('supplier_id', $VendorId)
-            ->whereBetween('payment_date', [$startDate, $endDate])
+            ->whereDate('payment_date', '>=', $startDate)
+            ->whereDate('payment_date', '<=', $endDate)
             ->select('id', 'amount_paid', 'description', 'payment_date as date') // updated
             ->get();
 
-        // 4. Local Sales
+        // 4. Local Sales (Vendor Bills)
         $lot_sales = DB::table('vendor_bills')
             ->where('vendorId', $supplierName)
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereDate('created_at', '>=', $startDate)
+            ->whereDate('created_at', '<=', $endDate)
             ->select(
                 'id',
                 'created_at as sale_date',
@@ -159,7 +176,7 @@ class ReportController extends Controller
             ->get();
 
         return response()->json([
-            'opening_balance' => $ledger->opening_balance ?? 0,
+            'opening_balance' => $adjustedOpeningBalance,
             'previous_balance' => $ledger->previous_balance ?? 0,
             'closing_balance' => $ledger->closing_balance ?? 0,
             'recoveries' => $recoveries,
