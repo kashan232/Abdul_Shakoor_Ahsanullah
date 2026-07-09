@@ -51,6 +51,12 @@
     background: #ffe3e3;
     font-weight: 600;
 }
+/* Ensure inputs do not shrink too small on mobile */
+table input.form-control,
+table select.form-control {
+    min-width: 100px;
+    font-size: 16px; /* Prevents iOS auto-zoom and keeps text legible */
+}
 </style>
 
 <div class="body-wrapper">
@@ -180,18 +186,20 @@ Add
 {{-- MAZDORI --}}
 <h5 class="fw-bold text-primary">Mazdori</h5>
 
-<table class="table table-bordered table-mazdori" id="mazdoriTable">
-<thead>
-<tr>
-<th>Unit In</th>
-<th>Units</th>
-<th>Rate</th>
-<th>Total</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-bordered table-mazdori" id="mazdoriTable">
+    <thead>
+    <tr>
+    <th>Unit In</th>
+    <th>Units</th>
+    <th>Rate</th>
+    <th>Total</th>
+    <th>Action</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+    </table>
+</div>
 
 <div class="alert alert-warning py-2">
     <strong>Total Mazdori:</strong>
@@ -207,17 +215,19 @@ Add
 Add Expense
 </button>
 
-<table class="table table-bordered table-expense" id="expenseTable">
-<thead>
-<tr>
-<th>Type</th>
-<th>Value</th>
-<th>Final</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-bordered table-expense" id="expenseTable">
+    <thead>
+    <tr>
+    <th>Type</th>
+    <th>Value</th>
+    <th>Final</th>
+    <th>Action</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+    </table>
+</div>
 
 <h6>Total Expenses: <span id="totalExpense">0</span></h6>
 <div class="d-flex gap-2 mt-2">

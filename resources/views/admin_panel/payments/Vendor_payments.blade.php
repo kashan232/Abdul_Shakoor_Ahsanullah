@@ -101,12 +101,12 @@
                     let billsTbody = document.querySelector('#sales_table tbody');
                     billsTbody.innerHTML = '';
 
-                    if (data.bills && data.bills.length > 0) {
-                        data.bills.forEach(bill => {
+                    if (data.sales && data.sales.length > 0) {
+                        data.sales.forEach(payment => {
                             billsTbody.innerHTML += `
                             <tr>
-                                <td>${new Date(bill.created_at).toLocaleDateString()}</td>
-                                <td>${bill.net_pay}</td>
+                                <td>${payment.payment_date}</td>
+                                <td>${payment.amount_paid}</td>
                             </tr>
                         `;
                         });
