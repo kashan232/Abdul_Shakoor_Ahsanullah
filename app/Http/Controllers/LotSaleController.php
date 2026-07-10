@@ -184,8 +184,19 @@ foreach ($request->sales as $sale) {
         $bill = VendorBill::withTrashed()->find($billId);
 
         if ($bill) {
+            // Restore supplier ledger
+            $supplier_id = $bill->vendorId;
+            $net_pay = $bill->net_pay;
+            
+            $ledger = \App\Models\SupplierLedger::where('supplier_id', $supplier_id)->latest()->first();
+            if ($ledger) {
+                $ledger->previous_balance = $ledger->closing_balance;
+                $ledger->closing_balance -= $net_pay;
+                $ledger->save();
+            }
+
             $bill->forceDelete(); // This will permanently delete the record
-            \Log::info("Bill permanently deleted.");
+            \Log::info("Bill permanently deleted and ledger adjusted.");
         } else {
             \Log::warning("Bill not found with ID: " . $billId);
         }
@@ -487,6 +498,7 @@ public function store_multi_lot(Request $request)
             $newBalance = $ledger->closing_balance - $sale->total;
             DB::table('customer_ledgers')->where('customer_id', $customer_id)->update([
                 'closing_balance' => $newBalance,
+                'previous_balance' => DB::raw("previous_balance - {$sale->total}"),
             ]);
         }
 
@@ -495,6 +507,15 @@ public function store_multi_lot(Request $request)
 
         // 6. Delete vendor bill related to this lot's truck_id
         if ($lot->truck_id) {
+            $vendorBills = DB::table('vendor_bills')->where('truck_id', $lot->truck_id)->get();
+            foreach ($vendorBills as $vBill) {
+                $vLedger = \App\Models\SupplierLedger::where('supplier_id', $vBill->vendorId)->latest()->first();
+                if ($vLedger) {
+                    $vLedger->previous_balance = $vLedger->closing_balance;
+                    $vLedger->closing_balance -= $vBill->net_pay;
+                    $vLedger->save();
+                }
+            }
             DB::table('vendor_bills')->where('truck_id', $lot->truck_id)->delete();
         }
 

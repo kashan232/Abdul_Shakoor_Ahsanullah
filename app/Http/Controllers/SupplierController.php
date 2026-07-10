@@ -186,6 +186,7 @@ class SupplierController extends Controller
             $ledger = SupplierLedger::where('supplier_id', $request->supplier_id)->first();
 
             if ($ledger) {
+                $ledger->previous_balance -= $request->amount_paid;
                 $ledger->closing_balance -= $request->amount_paid;
                 $ledger->save();
             } else {
@@ -306,6 +307,7 @@ class SupplierController extends Controller
                 ->where('supplier_id', $request->supplier_id)
                 ->update([
                     'closing_balance' => DB::raw("closing_balance + {$request->amount}"),
+                    'previous_balance' => DB::raw("previous_balance + {$request->amount}"),
                     'updated_at' => now()
                 ]);
 
@@ -342,6 +344,7 @@ class SupplierController extends Controller
                 ->where('supplier_id', $request->supplier_id)
                 ->update([
                     'closing_balance' => DB::raw("closing_balance - {$difference}"),
+                    'previous_balance' => DB::raw("previous_balance - {$difference}"),
                     'updated_at' => now()
                 ]);
 
