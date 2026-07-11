@@ -56,15 +56,16 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="page-title mb-0">Customer Balance </h4>
                 </div>
-                <div class="mb-3">
-                    <input type="text" id="customerSearch" class="form-control" placeholder="Search Customer by Name...">
-                </div>
+
                 <div class="row g-4">
                     <!-- Left Side: Customers -->
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-header bg-gradient-primary text-white fw-semibold">
                                 <i class="fas fa-users me-2"></i> Customers List
+                            </div>
+                            <div class="p-2 border-bottom">
+                                <input type="text" id="customerSearch" class="form-control form-control-sm" placeholder="Search Customer by Name...">
                             </div>
                             <div class="card-body p-0 customer-list-scroll">
                                 <div class="table-responsive">

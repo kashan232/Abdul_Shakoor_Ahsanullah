@@ -64,6 +64,9 @@
                             <div class="card-header bg-gradient-primary text-white fw-semibold">
                                 <i class="fas fa-users me-2"></i> Vendor List
                             </div>
+                            <div class="p-2 border-bottom">
+                                <input type="text" id="searchVendor" class="form-control form-control-sm" placeholder="Search Vendor...">
+                            </div>
                             <div class="card-body p-0 customer-list-scroll">
                                 <div class="table-responsive">
                                     <table class="table mb-0">
@@ -177,6 +180,14 @@
 
     <script>
         $(document).ready(function() {
+            // Search Vendor functionality
+            $('#searchVendor').on('keyup', function() {
+                let value = $(this).val().toLowerCase();
+                $('#customerList .clickable-row').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
             $('.clickable-row').on('click', function() {
                 let vendorId = $(this).data('id');
                 let vendorName = $(this).find('.customer-link').text();

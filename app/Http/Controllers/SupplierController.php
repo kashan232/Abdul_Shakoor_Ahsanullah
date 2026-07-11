@@ -239,6 +239,7 @@ class SupplierController extends Controller
         // Step 2: Find all vendor bills using supplier name as vendorId
         $bills = DB::table('vendor_bills')
             ->where('vendorId', $supplierName)
+            ->whereNull('deleted_at')
             ->select(
                 'id',
                 'created_at as date',
@@ -251,6 +252,7 @@ class SupplierController extends Controller
         // Step 3: Find all supplier payments
         $payments = DB::table('supplier_payments')
             ->where('supplier_id', $supplier_id)
+            ->whereNull('deleted_at')
             ->select(
                 'id',
                 'payment_date as date',
