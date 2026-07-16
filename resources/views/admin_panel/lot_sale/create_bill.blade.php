@@ -444,6 +444,14 @@ function removeMazdoriRow(lotId) {
     const row   = select.closest('tr');
     const input = row.querySelector('.expense-input');
     const final = row.querySelector('.expense-final');
+    const otherName = row.querySelector('.other-expense-name');
+
+    if (select.value === "Other") {
+        otherName.style.display = "block";
+    } else {
+        otherName.style.display = "none";
+        otherName.value = "";
+    }
 
     if (select.value === "Mazdori") {
         const totalMazdori = parseFloat(
@@ -473,7 +481,9 @@ function addExpenseRow() {
                 <option value="Commission">Commission (%)</option>
                 <option value="Rent">Rent</option>
                 <option value="Market Tax">Market Tax</option>
+                <option value="Other">Other</option>
             </select>
+            <input type="text" class="form-control other-expense-name mt-2" placeholder="Expense Name" style="display:none;">
         </td>
         <td>
             <input type="number"
@@ -604,8 +614,12 @@ return;
 
 let expenses = [];
 document.querySelectorAll('#expenseTable tbody tr').forEach(row => {
+let type = row.querySelector('.expense-type').value;
+if (type === 'Other') {
+    type = row.querySelector('.other-expense-name').value || 'Other Expense';
+}
 expenses.push({
-category: row.querySelector('.expense-type').value,
+category: type,
 value: row.querySelector('.expense-input').value,
 final_amount: row.querySelector('.expense-final').value
 });

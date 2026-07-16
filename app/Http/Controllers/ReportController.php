@@ -170,6 +170,10 @@ class ReportController extends Controller
                 'id',
                 'bill_date as sale_date',
                 'net_pay as total', // updated
+                'subtotal',
+                'total_expense',
+                'adjustment',
+                'sale_units',
                 'lot_id',
                 'trucknumber'
             )
