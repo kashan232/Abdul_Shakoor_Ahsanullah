@@ -382,6 +382,13 @@
     </a>
 </li>
 
+<li class="sidebar-menu-item ">
+    <a href="{{ route('sale.recovery.report') }}">
+        <i class="menu-icon las la-dot-circle"></i>
+        <span class="menu-title"> Sale & Recovery Report </span>
+    </a>
+</li>
+
 
 
                         </ul>

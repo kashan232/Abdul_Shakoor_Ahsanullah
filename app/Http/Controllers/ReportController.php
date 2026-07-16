@@ -142,8 +142,8 @@ class ReportController extends Controller
         
         // Bills and Payments before start date
         $previousBills = DB::table('vendor_bills')
-            ->where('vendorId', $supplierName)
-            ->whereDate('created_at', '<', $startDate)
+            ->where('vendorId', $VendorId)
+            ->whereDate('bill_date', '<', $startDate)
             ->sum('net_pay');
             
         $previousPayments = DB::table('supplier_payments')
@@ -163,12 +163,12 @@ class ReportController extends Controller
 
         // 4. Local Sales (Vendor Bills)
         $lot_sales = DB::table('vendor_bills')
-            ->where('vendorId', $supplierName)
-            ->whereDate('created_at', '>=', $startDate)
-            ->whereDate('created_at', '<=', $endDate)
+            ->where('vendorId', $VendorId)
+            ->whereDate('bill_date', '>=', $startDate)
+            ->whereDate('bill_date', '<=', $endDate)
             ->select(
                 'id',
-                'created_at as sale_date',
+                'bill_date as sale_date',
                 'net_pay as total', // updated
                 'lot_id',
                 'trucknumber'
@@ -263,6 +263,45 @@ class ReportController extends Controller
         return response()->json([
             'success' => true,
             'data' => $report,
+        ]);
+    }
+
+    public function saleRecoveryReport()
+    {
+        return view('admin_panel.report.sale_recovery_report');
+    }
+
+    public function fetchSaleRecoveryReport(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        // Fetch sales within date range and join customer
+        $sales = DB::table('lot_sales')
+            ->join('customers', 'lot_sales.customer_id', '=', 'customers.id')
+            ->whereBetween('lot_sales.sale_date', [$startDate, $endDate])
+            ->select(
+                'customers.customer_name as customer',
+                'lot_sales.quantity',
+                'lot_sales.weight',
+                'lot_sales.total'
+            )
+            ->get();
+
+        // Fetch recoveries within date range and join customer (customer_ledgers -> customers)
+        $recoveries = DB::table('customer_recoveries')
+            ->join('customers', 'customer_recoveries.customer_ledger_id', '=', 'customers.id')
+            ->whereBetween('customer_recoveries.date', [$startDate, $endDate])
+            ->select(
+                'customers.customer_name as customer',
+                'customer_recoveries.amount_paid',
+                'customer_recoveries.date'
+            )
+            ->get();
+
+        return response()->json([
+            'sales' => $sales,
+            'recoveries' => $recoveries
         ]);
     }
 }

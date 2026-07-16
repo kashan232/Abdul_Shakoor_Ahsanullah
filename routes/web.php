@@ -254,6 +254,8 @@ Route::get('/get-vendor-balance/{id}', [PaymentController::class, 'getVendorBala
 
 Route::get('/customer-ledger-report', [ReportController::class, 'customer_ledger_report'])->name('customer-ledger-report');
 Route::get('/fetch-Customer-ledger', [ReportController::class, 'fetchCustomerledger'])->name('fetch-Customer-ledger');
+Route::get('/sale-recovery-report', [ReportController::class, 'saleRecoveryReport'])->name('sale.recovery.report');
+Route::post('/fetch-sale-recovery-report', [ReportController::class, 'fetchSaleRecoveryReport'])->name('fetch.sale.recovery.report');
 
 Route::get('/Vendor-ledger-report', [ReportController::class, 'Vendor_ledger_report'])->name('Vendor-ledger-report');
 Route::get('/fetch-Vendor-ledger-report', [ReportController::class, 'fetch_Vendor_ledger_report'])->name('fetch-Vendor-ledger-report');
