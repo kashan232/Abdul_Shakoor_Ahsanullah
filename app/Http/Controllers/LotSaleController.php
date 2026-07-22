@@ -986,6 +986,7 @@ $billDate = Carbon::parse($request->bill_date)->format('Y-m-d');
         $customCategoryMap = [
             'Mazdori' => 'مزدوری',
             'Commission' => 'کمیشن',
+            'Commission (Fixed)' => 'کمیشن',
             'Rent' => 'کرایہ',
             'Market Tax' => 'مارکیٹ ٹیکس',
         ];

@@ -479,6 +479,7 @@ function addExpenseRow() {
                 <option value="">Select</option>
                 <option value="Mazdori">Mazdori</option>
                 <option value="Commission">Commission (%)</option>
+                <option value="Commission (Fixed)">Commission (Fixed)</option>
                 <option value="Rent">Rent</option>
                 <option value="Market Tax">Market Tax</option>
                 <option value="Other">Other</option>
