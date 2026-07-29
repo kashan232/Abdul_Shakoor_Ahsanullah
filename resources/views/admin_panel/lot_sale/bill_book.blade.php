@@ -145,7 +145,8 @@
 
     .info-table td {
         padding: 12px 15px;
-        font-size: 17px;
+        font-size: 24px;
+        font-weight: bold;
         border-left: 1px solid #ddd; /* left border because RTL */
     }
     .info-table td:last-child {
@@ -167,7 +168,8 @@
         background-color: #2E3094 !important;
         color: #ffffff !important;
         padding: 12px 10px;
-        font-size: 15px;
+        font-size: 22px;
+        font-weight: bold;
         border: 1px solid #2E3094;
         text-align: center;
     }
@@ -179,7 +181,8 @@
     .main-table tbody td {
         padding: 10px;
         border: 1px solid #dee2e6;
-        font-size: 15px;
+        font-size: 22px;
+        font-weight: bold;
         text-align: center;
     }
 
@@ -187,7 +190,7 @@
         background-color: #e2e8f0;
         font-weight: bold;
         color: #1e293b;
-        font-size: 16px;
+        font-size: 24px;
         padding: 12px 10px;
         border-top: 2px solid #2E3094;
         text-align: center;
@@ -203,7 +206,8 @@
         background-color: #f1f5f9;
         color: #334155;
         padding: 12px 10px;
-        font-size: 15px;
+        font-size: 22px;
+        font-weight: bold;
         border-bottom: 2px solid #cbd5e1;
         text-align: center;
     }
@@ -211,7 +215,8 @@
     .expense-table td {
         padding: 10px;
         border: 1px solid #dee2e6;
-        font-size: 15px;
+        font-size: 22px;
+        font-weight: bold;
         text-align: left;
     }
 
@@ -222,14 +227,14 @@
     .expense-total td {
         background-color: #fee2e2 !important;
         color: #b91c1c !important;
-        font-size: 16px;
+        font-size: 24px;
         border-top: 2px solid #fca5a5;
     }
 
     .net-row td {
         background-color: #dcfce7 !important;
         color: #15803d !important;
-        font-size: 18px;
+        font-size: 26px;
         border-top: 2px solid #86efac;
     }
 
@@ -352,7 +357,7 @@
         body {
             margin: 0;
             padding: 0;
-            zoom: 0.85; /* Shrink to fit on one page */
+            zoom: 1; /* Keep actual size */
             background-color: white;
         }
 
@@ -425,14 +430,16 @@
                                 <table class="main-table table table-bordered table-striped">
                                     <thead class="table-light">
                                         <tr>
-                                            <th data-ur="نگ">نگ</th>
-                                            <th data-ur="وزن">وزن</th> {{-- نیا وزن کا کالم --}}
-                                            <th data-ur="یونٹ">یونٹ</th>
-                                            <th data-ur="جنس">جنس</th>
-                                            <th data-ur="اقسام">اقسام</th>
-                                            <th data-ur="سائز">سائز</th>
-                                            <th data-ur="ریٹ">ریٹ</th>
-                                            <th data-ur="ٹوٹل">ٹوٹل</th>
+                                            <th data-ur="نگ" style="width: 12%;">نگ</th>
+                                            @if($totalWeights > 0)
+                                            <th data-ur="وزن" style="width: 12%;">وزن</th> {{-- نیا وزن کا کالم --}}
+                                            @endif
+                                            <th data-ur="یونٹ" style="width: 8%;">یونٹ</th>
+                                            <th data-ur="جنس" style="width: 14%;">جنس</th>
+                                            <th data-ur="اقسام" style="width: 14%;">اقسام</th>
+                                            <th data-ur="سائز" style="width: 8%;">سائز</th>
+                                            <th data-ur="ریٹ" style="width: 16%;">ریٹ</th>
+                                            <th data-ur="ٹوٹل" style="width: 16%;">ٹوٹل</th>
                                         </tr>
                                     </thead>
 
@@ -455,7 +462,9 @@
                                         @endphp
                                         <tr>
                                             <td>{{ $unit }}</td>
+                                            @if($totalWeights > 0)
                                             <td>{{ number_format($weight) }}</td> 
+                                            @endif
                                             <td>{{ $lot->unit_in_ur ?? 'نہیں ملا' }}</td>
                                             <td>{{ $lot->category_ur ?? '' }}</td>
                                             <td>{{ $lot->variety_ur ?? '' }}</td>
@@ -470,7 +479,9 @@
                                             @for ($i=0; $i < ($minRows - $existingRows); $i++)
                                             <tr>
                                             <td>&nbsp;</td>
+                                            @if($totalWeights > 0)
                                             <td></td>
+                                            @endif
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -483,8 +494,10 @@
 
                                             {{-- آخر میں total row --}}
                                             <tr class="lot-total-row">
-                                                <td class="text-center">کل نگ	: {{ number_format($totalSaleUnits) }}</td>
+                                                <td class="text-center">کل نگ: {{ number_format($totalSaleUnits) }}</td>
+                                                @if($totalWeights > 0)
                                                 <td class="text-center">کل وزن: {{ number_format($totalRowWeights) }}</td>
+                                                @endif
                                                 <td class="text-end"></td>
                                                 <td class="text-end"></td>
                                                 <td class="text-end"></td>
