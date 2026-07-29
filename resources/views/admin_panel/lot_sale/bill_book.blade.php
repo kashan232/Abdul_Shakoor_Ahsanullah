@@ -346,8 +346,8 @@
     /* Print Style */
     @media print {
         @page {
-            size: auto;
-            margin: 5mm; /* very small margin */
+            size: A4 portrait;
+            margin: 5mm; 
         }
         
         .no-print {
@@ -357,7 +357,7 @@
         body {
             margin: 0;
             padding: 0;
-            zoom: 1; /* Keep actual size */
+            zoom: 0.80; /* Shrink to fit on one page */
             background-color: white;
         }
 
@@ -369,7 +369,16 @@
         }
 
         .main-table, .expense-table {
-            margin-bottom: 10px !important;
+            margin-bottom: 5px !important;
+        }
+
+        .row.mt-4 {
+            margin-top: 10px !important;
+        }
+
+        /* Reduce vertical padding in print to save space */
+        .info-table td, .main-table thead th, .main-table tbody td, .expense-table th, .expense-table td, .lot-total-row td {
+            padding: 6px 10px !important;
         }
 
         #urduSection {
