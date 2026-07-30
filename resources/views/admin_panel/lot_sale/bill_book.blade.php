@@ -144,8 +144,8 @@
     }
 
     .info-table td {
-        padding: 12px 15px;
-        font-size: 24px;
+        padding: 8px 12px;
+        font-size: 20px;
         font-weight: bold;
         border-left: 1px solid #ddd; /* left border because RTL */
     }
@@ -160,15 +160,15 @@
     .main-table {
         border-collapse: collapse;
         width: 100%;
-        margin-bottom: 25px;
+        margin-bottom: 15px;
         border: 1px solid #ddd;
     }
 
     .main-table thead th {
         background-color: #2E3094 !important;
         color: #ffffff !important;
-        padding: 12px 10px;
-        font-size: 22px;
+        padding: 10px 8px;
+        font-size: 18px;
         font-weight: bold;
         border: 1px solid #2E3094;
         text-align: center;
@@ -179,9 +179,9 @@
     }
 
     .main-table tbody td {
-        padding: 10px;
+        padding: 8px;
         border: 1px solid #dee2e6;
-        font-size: 22px;
+        font-size: 18px;
         font-weight: bold;
         text-align: center;
     }
@@ -190,8 +190,8 @@
         background-color: #e2e8f0;
         font-weight: bold;
         color: #1e293b;
-        font-size: 24px;
-        padding: 12px 10px;
+        font-size: 20px;
+        padding: 10px 8px;
         border-top: 2px solid #2E3094;
         text-align: center;
     }
@@ -205,17 +205,17 @@
     .expense-table th {
         background-color: #f1f5f9;
         color: #334155;
-        padding: 12px 10px;
-        font-size: 22px;
+        padding: 10px 8px;
+        font-size: 18px;
         font-weight: bold;
         border-bottom: 2px solid #cbd5e1;
         text-align: center;
     }
 
     .expense-table td {
-        padding: 10px;
+        padding: 8px;
         border: 1px solid #dee2e6;
-        font-size: 22px;
+        font-size: 18px;
         font-weight: bold;
         text-align: left;
     }
@@ -227,14 +227,14 @@
     .expense-total td {
         background-color: #fee2e2 !important;
         color: #b91c1c !important;
-        font-size: 24px;
+        font-size: 20px;
         border-top: 2px solid #fca5a5;
     }
 
     .net-row td {
         background-color: #dcfce7 !important;
         color: #15803d !important;
-        font-size: 26px;
+        font-size: 22px;
         border-top: 2px solid #86efac;
     }
 
@@ -357,7 +357,7 @@
         body {
             margin: 0;
             padding: 0;
-            zoom: 0.80; /* Shrink to fit on one page */
+            zoom: 0.78; /* Adjusted zoom to fit the full header on one page */
             background-color: white;
         }
 
@@ -373,12 +373,12 @@
         }
 
         .row.mt-4 {
-            margin-top: 10px !important;
+            margin-top: 5px !important;
         }
 
         /* Reduce vertical padding in print to save space */
         .info-table td, .main-table thead th, .main-table tbody td, .expense-table th, .expense-table td, .lot-total-row td {
-            padding: 6px 10px !important;
+            padding: 4px 6px !important;
         }
 
         #urduSection {
@@ -415,7 +415,7 @@
                             $finals = json_decode($bill->final_amount ?? '[]');
                             @endphp
 
-                            <div class="top-header" style="padding: 0; margin-bottom: 0px;">
+                            <div class="top-header" style="padding: 0; margin-bottom: 10px;">
                                 <img src="{{ asset('bill_header.jpeg') }}" alt="Header Image" style="width: 100%; height: auto;">
                             </div>
 
@@ -482,24 +482,6 @@
                                             <td>{{ number_format($amounts[$index] ?? 0) }}</td>
                                         </tr>
                                         @endforeach
-
-                                        {{-- اگر rows کم ہیں تو خالی rows ڈالو --}}
-                                        @if ($existingRows < $minRows)
-                                            @for ($i=0; $i < ($minRows - $existingRows); $i++)
-                                            <tr>
-                                            <td>&nbsp;</td>
-                                            @if($totalWeights > 0)
-                                            <td></td>
-                                            @endif
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            </tr>
-                                            @endfor
-                                            @endif
 
                                             {{-- آخر میں total row --}}
                                             <tr class="lot-total-row">
