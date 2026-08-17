@@ -228,8 +228,9 @@
                                     <thead>
                                         <tr>
                                             <th class="text-start">Customer</th>
+                                            <th>Date</th>
                                             <th>Lots</th>
-                                            <th>Weight</th>
+                                            <th>Rate</th>
                                             <th>Total (PKR)</th>
                                         </tr>
                                     </thead>
@@ -238,7 +239,7 @@
                                     </tbody>
                                     <tfoot class="totals-row">
                                         <tr>
-                                            <td colspan="3" class="text-end">Grand Total Sales:</td>
+                                            <td colspan="4" class="text-end">Grand Total Sales:</td>
                                             <td id="grandTotalSales" class="text-success">0</td>
                                         </tr>
                                     </tfoot>
@@ -312,15 +313,16 @@
                                 salesHtml += `
                                     <tr>
                                         <td class="text-start fw-bold">${s.customer || '-'}</td>
+                                        <td>${s.date || '-'}</td>
                                         <td>${s.quantity || '-'}</td>
-                                        <td>${s.weight || '-'}</td>
+                                        <td>${s.price || '-'}</td>
                                         <td class="text-end">${total.toLocaleString()}</td>
                                     </tr>
                                 `;
                                 grandSales += total;
                             });
                         } else {
-                            salesHtml = '<tr><td colspan="4" class="text-center text-muted">No sales found.</td></tr>';
+                            salesHtml = '<tr><td colspan="5" class="text-center text-muted">No sales found.</td></tr>';
                         }
 
                         let recoveriesHtml = '';

@@ -337,7 +337,7 @@
                                 date: entry.date,
                                 type: 'recovery',
                                 amount: parseFloat(entry.amount_paid) || 0,
-                                description: 'Payment To Vendor'
+                                description: `<a href="{{ route('supplier-payment') }}" target="_blank" style="text-decoration: underline; color: #3b82f6;">Payment To Vendor</a>`
                             });
                         });
 

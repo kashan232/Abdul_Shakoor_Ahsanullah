@@ -282,11 +282,27 @@
             <td>ٹوٹل</td>
             <td>${(previousBalance + grandTotal).toFixed(2)}</td>
         </tr>
+`;
+                        
+                        if (response.recoveries_list && response.recoveries_list.length > 0) {
+                            response.recoveries_list.forEach(function(rec) {
+                                receiptHtml += `
+        <tr class="totals">
+            <td colspan="2">${rec.date}</td>
+            <td>وصُولی</td>
+            <td>${parseFloat(rec.amount_paid).toFixed(2)}</td>
+        </tr>`;
+                            });
+                        } else {
+                            receiptHtml += `
         <tr class="totals">
             <td colspan="2"></td>
             <td>وصُولی</td>
-            <td>${recoveryAmount.toFixed(2)}</td>
-        </tr>
+            <td>0.00</td>
+        </tr>`;
+                        }
+                        
+                        receiptHtml += `
         <tr class="totals" style="background-color: #d1e7dd;">
             <td colspan="2"></td>
             <td><strong>بقایا بیلنس</strong></td>

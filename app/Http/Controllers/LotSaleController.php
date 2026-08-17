@@ -583,20 +583,25 @@ public function store_multi_lot(Request $request)
         $currentSales = $sales->sum('total');
 
         // Current Recoveries within the date range
-        $currentRecoveries = DB::table('customer_recoveries')
+        $recoveriesList = DB::table('customer_recoveries')
             ->where('customer_ledger_id', $customerId)
             ->when($startDate && $endDate, function ($q) use ($startDate, $endDate) {
                 return $q->whereBetween('date', [$startDate, $endDate]);
             })
-            ->sum('amount_paid');
+            ->select('date', 'amount_paid')
+            ->orderBy('date')
+            ->get();
+
+        $currentRecoveriesTotal = $recoveriesList->sum('amount_paid');
 
         // Closing Balance Calculation
-        $closingBalance = $calculatedPreviousBalance + $currentSales - $currentRecoveries;
+        $closingBalance = $calculatedPreviousBalance + $currentSales - $currentRecoveriesTotal;
 
         return response()->json([
             'sales' => $sales,
             'previous_balance' => $calculatedPreviousBalance,
-            'total_recovery' => $currentRecoveries,
+            'total_recovery' => $currentRecoveriesTotal,
+            'recoveries_list' => $recoveriesList,
             'closing_balance' => $closingBalance,
         ]);
     }

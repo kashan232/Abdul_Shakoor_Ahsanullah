@@ -37,7 +37,7 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($SupplierPayments as $payment)
-                                            <tr>
+                                            <tr id="payment-row-{{ $payment->id }}">
                                                 <td>{{ $payment->id }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($payment->payment_date)->format('d-M-Y') }}</td>
                                                 <td>{{ $payment->supplier->name ?? 'N/A' }}</td>
@@ -109,6 +109,33 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
+            // Highlight specific row if highlight_id is in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const highlightId = urlParams.get('highlight_id');
+            if (highlightId) {
+                const row = $('#payment-row-' + highlightId);
+                if (row.length) {
+                    // Optional: If you are using DataTables, search for the ID so the page changes to it
+                    try {
+                        if ($.fn.DataTable.isDataTable('#example')) {
+                            $('#example').DataTable().search(highlightId).draw();
+                        }
+                    } catch(e) {}
+
+                    setTimeout(() => {
+                        row.css('background-color', '#ffff99'); // Yellow highlight
+                        row.css('transition', 'background-color 1s ease-in-out');
+                        $('html, body').animate({
+                            scrollTop: row.offset().top - 150
+                        }, 800);
+                        
+                        setTimeout(() => {
+                            row.css('background-color', ''); // Remove highlight after 4 seconds
+                        }, 4000);
+                    }, 500);
+                }
+            }
+
             // Edit Button Click
             $(document).on('click', '.edit-btn', function() {
                 $('#edit_payment_id').val($(this).data('id'));

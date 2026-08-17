@@ -280,19 +280,22 @@ class ReportController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        // Fetch sales within date range and join customer
+        // Fetch sales within date range and join customer, order by customer so all goods of one person are together
         $sales = DB::table('lot_sales')
             ->join('customers', 'lot_sales.customer_id', '=', 'customers.id')
             ->whereBetween('lot_sales.sale_date', [$startDate, $endDate])
             ->select(
                 'customers.customer_name as customer',
+                'lot_sales.sale_date as date',
                 'lot_sales.quantity',
-                'lot_sales.weight',
+                'lot_sales.price',
                 'lot_sales.total'
             )
+            ->orderBy('customers.customer_name')
+            ->orderBy('lot_sales.sale_date')
             ->get();
 
-        // Fetch recoveries within date range and join customer (customer_ledgers -> customers)
+        // Fetch recoveries within date range and join customer
         $recoveries = DB::table('customer_recoveries')
             ->join('customers', 'customer_recoveries.customer_ledger_id', '=', 'customers.id')
             ->whereBetween('customer_recoveries.date', [$startDate, $endDate])
@@ -301,6 +304,8 @@ class ReportController extends Controller
                 'customer_recoveries.amount_paid',
                 'customer_recoveries.date'
             )
+            ->orderBy('customers.customer_name')
+            ->orderBy('customer_recoveries.date')
             ->get();
 
         return response()->json([
