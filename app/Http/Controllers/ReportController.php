@@ -144,11 +144,13 @@ class ReportController extends Controller
         $previousBills = DB::table('vendor_bills')
             ->where('vendorId', $VendorId)
             ->whereDate('bill_date', '<', $startDate)
+            ->whereNull('deleted_at')
             ->sum('net_pay');
             
         $previousPayments = DB::table('supplier_payments')
             ->where('supplier_id', $VendorId)
             ->whereDate('payment_date', '<', $startDate)
+            ->whereNull('deleted_at')
             ->sum('amount_paid');
             
         $adjustedOpeningBalance = $initialOpeningBalance + $previousBills - $previousPayments;
@@ -158,6 +160,7 @@ class ReportController extends Controller
             ->where('supplier_id', $VendorId)
             ->whereDate('payment_date', '>=', $startDate)
             ->whereDate('payment_date', '<=', $endDate)
+            ->whereNull('deleted_at')
             ->select('id', 'amount_paid', 'description', 'payment_date as date') // updated
             ->get();
 
@@ -166,6 +169,7 @@ class ReportController extends Controller
             ->where('vendorId', $VendorId)
             ->whereDate('bill_date', '>=', $startDate)
             ->whereDate('bill_date', '<=', $endDate)
+            ->whereNull('deleted_at')
             ->select(
                 'id',
                 'bill_date as sale_date',

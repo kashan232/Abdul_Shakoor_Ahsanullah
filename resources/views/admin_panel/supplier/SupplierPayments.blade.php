@@ -113,27 +113,26 @@
             const urlParams = new URLSearchParams(window.location.search);
             const highlightId = urlParams.get('highlight_id');
             if (highlightId) {
-                const row = $('#payment-row-' + highlightId);
-                if (row.length) {
-                    // Optional: If you are using DataTables, search for the ID so the page changes to it
-                    try {
-                        if ($.fn.DataTable.isDataTable('#example')) {
-                            $('#example').DataTable().search(highlightId).draw();
-                        }
-                    } catch(e) {}
+                // Wait for DataTable to initialize
+                setTimeout(() => {
+                    let table = null;
+                    if ($.fn.DataTable.isDataTable('#example')) {
+                        table = $('#example').DataTable();
+                        // Exact match search on the ID column (Column 0)
+                        table.column(0).search('^' + highlightId + '$', true, false).draw();
+                    }
 
+                    // Give DataTable a moment to draw
                     setTimeout(() => {
-                        row.css('background-color', '#ffff99'); // Yellow highlight
-                        row.css('transition', 'background-color 1s ease-in-out');
-                        $('html, body').animate({
-                            scrollTop: row.offset().top - 150
-                        }, 800);
-                        
-                        setTimeout(() => {
-                            row.css('background-color', ''); // Remove highlight after 4 seconds
-                        }, 4000);
-                    }, 500);
-                }
+                        const row = $('#payment-row-' + highlightId);
+                        if (row.length) {
+                            row.css('background-color', '#ffff99'); // Yellow highlight
+                            $('html, body').animate({
+                                scrollTop: row.offset().top - 150
+                            }, 800);
+                        }
+                    }, 200);
+                }, 500);
             }
 
             // Edit Button Click
