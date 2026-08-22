@@ -90,6 +90,7 @@ Route::post('/update-unit', [UnitController::class, 'update_unit'])->name('updat
 Route::get('/In-unit', [UnitInController::class, 'In_unit'])->middleware(['auth','admin'])->name('In-unit');
 Route::post('/store-In-unit', [UnitInController::class, 'store_In_unit'])->name('store-In-unit');
 Route::post('/update-In-unit', [UnitInController::class, 'update_In_unit'])->name('update-In-unit');
+Route::post('/delete-In-unit', [UnitInController::class, 'delete_In_unit'])->name('delete-In-unit');
 
 
 //product

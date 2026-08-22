@@ -56,6 +56,10 @@
                                                             data-has_status="1" data-target="#editunit" data-unit-id="{{ $unit->id }}" data-unit-name="{{ $unit->unit_in }}"
                                                             data-unit-urdu="{{ $unit->unit_in_urdu }}">
                                                             <i class="la la-pencil"></i>Edit </button>
+                                                        
+                                                        <button type="button" class="btn btn-outline--danger deleteUnitBtn fw-bold" data-unit-id="{{ $unit->id }}">
+                                                            <i class="las la-trash"></i>Delete
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -136,6 +140,7 @@
     </div>
     @include('admin_panel.include.footer_include')
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
             // Edit category button click event
@@ -147,5 +152,44 @@
                 $('#editUnitName').val(unitName);
                 $('#editUnitNameUrdu').val(unitNameUrdu); // Set the Urdu name
             });
+
+            // Delete unit button click event
+            $(document).on('click', '.deleteUnitBtn', function() {
+                var unitId = $(this).data('unit-id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You want to delete this Unit-In?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('delete-In-unit') }}",
+                            type: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                unit_id: unitId
+                            },
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire('Deleted!', response.message, 'success').then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('Error!', response.message, 'error');
+                                }
+                            },
+                            error: function() {
+                                Swal.fire('Error!', 'Something went wrong.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
         });
     </script>
+</body>
+</html>

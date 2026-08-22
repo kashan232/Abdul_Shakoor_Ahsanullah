@@ -60,4 +60,25 @@ class UnitInController extends Controller
             return redirect()->back();
         }
     }
+
+    public function delete_In_unit(Request $request)
+    {
+        if (Auth::id()) {
+            $unit_id = $request->input('unit_id');
+            $unit = UnitIn::find($unit_id);
+            if ($unit) {
+                // Check if this unit is used in LotEntry (it uses the unit_in string value)
+                $isUsedInLots = \App\Models\LotEntry::where('unit_in', $unit->unit_in)->exists();
+                
+                if ($isUsedInLots) {
+                    return response()->json(['status' => 'error', 'message' => 'Cannot delete this unit. It is already in use by some truck entries.']);
+                }
+
+                $unit->delete();
+                return response()->json(['status' => 'success', 'message' => 'Unit deleted successfully']);
+            }
+            return response()->json(['status' => 'error', 'message' => 'Unit not found']);
+        }
+        return response()->json(['status' => 'error', 'message' => 'Unauthorized']);
+    }
 }
