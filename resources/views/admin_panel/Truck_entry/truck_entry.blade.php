@@ -271,9 +271,9 @@
                 <td>
                     <select name="unit_in[]" class="form-control">
                         <option value="" disabled>Select Unit In</option>
-                        <option value="Bori">Bori</option>
-                        <option value="Katta">Katta</option>
-                        <option value="Jali">Jali</option>
+                        @foreach($UnitIns as $Unitin)
+                            <option value="{{ $Unitin->unit_in }}">{{ $Unitin->unit_in }}</option>
+                        @endforeach
                     </select>
                 </td>
                 <td>
