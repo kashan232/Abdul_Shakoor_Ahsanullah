@@ -267,7 +267,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
-            $('.editCategoryBtn').click(function() {
+            $(document).on('click', '.editCategoryBtn', function() {
                 var supplierId = $(this).data('supplier-id');
                 var supplierName = $(this).data('supplier-name');
                 var supplierMobile = $(this).data('supplier-mobile');
@@ -293,7 +293,7 @@
     </script>
 
     <script>
-        $('.toggle-supplier-status').change(function() {
+        $(document).on('change', '.toggle-supplier-status', function() {
             var supplierId = $(this).data('id');
             var newStatus = $(this).is(':checked') ? 1 : 0;
 
