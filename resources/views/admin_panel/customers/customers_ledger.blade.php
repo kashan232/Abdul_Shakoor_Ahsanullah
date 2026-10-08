@@ -38,7 +38,7 @@
                                         </thead>
                                         <tbody>
                                             @forelse($CustomerLedgers as $ledger)
-                                            <tr>
+                                            <tr class="{{ ($ledger->previous_balance == 0 && $ledger->closing_balance == 0) ? 'zero-balance' : '' }}">
                                                 <td>{{ $ledger->customer_id }}</td>
                                                 <td>{{ $ledger->Customer->customer_name }}</td>
                                                 <td>{{ $ledger->Customer->customer_phone }}</td>
@@ -63,3 +63,30 @@
         </div><!-- body-wrapper end -->
     </div>
     @include('admin_panel.include.footer_include')
+    <script>
+        $(document).ready(function() {
+            if ($.fn.DataTable.isDataTable('#example')) {
+                var table = $('#example').DataTable();
+                table.destroy();
+                $('#example').DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copyHtml5',
+                        'excelHtml5',
+                        'csvHtml5',
+                        {
+                            extend: 'pdfHtml5',
+                            exportOptions: {
+                                rows: function ( idx, data, node ) {
+                                    return !$(node).hasClass('zero-balance');
+                                }
+                            }
+                        }
+                    ],
+                    order: [[1, 'asc']]
+                });
+            }
+        });
+    </script>
+</body>
+</html>

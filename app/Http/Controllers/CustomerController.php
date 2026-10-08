@@ -182,7 +182,12 @@ class CustomerController extends Controller
     {
         if (Auth::id()) {
             $userId = Auth::id();
-            $CustomerLedgers = CustomerLedger::where('admin_or_user_id', $userId)->with('Customer')->get();
+            $CustomerLedgers = CustomerLedger::where('customer_ledgers.admin_or_user_id', $userId)
+                ->join('customers', 'customer_ledgers.customer_id', '=', 'customers.id')
+                ->select('customer_ledgers.*')
+                ->orderBy('customers.customer_name', 'asc')
+                ->with('Customer')
+                ->get();
             return view('admin_panel.customers.customers_ledger', compact('CustomerLedgers'));
         } else {
             return redirect()->back();
